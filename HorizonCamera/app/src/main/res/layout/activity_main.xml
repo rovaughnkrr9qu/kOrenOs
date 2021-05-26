@@ -8,10 +8,57 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="sk.uniza.fri.korenos.horizoncamera.MainActivity">
+    tools:context="sk.uniza.fri.korenos.horizoncamera.Activities.MainActivity">
 
-    <TextView
+    <Button
+        android:onClick="goToGalleryActivityAction"
+        android:text="@string/mainMenuGalleryButtonText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_above="@+id/mainMenuSettingsButton"
+        android:id="@+id/mainMenuGalleryButton"
+        android:layout_alignEnd="@+id/mainMenuVideoButton"
+        android:layout_alignStart="@+id/mainMenuVideoButton" />
+
+    <Button
+        android:onClick="goToVideoActivityAction"
+        android:text="@string/mainMenuVideoButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/mainMenuGalleryButton"
+        android:layout_marginBottom="15dp"
+        android:id="@+id/mainMenuVideoButton"
+        android:layout_alignEnd="@+id/mainMenuPhotoButton"
+        android:layout_alignStart="@+id/mainMenuPhotoButton" />
+
+    <Button
+        android:onClick="goToPhotoActivityAction"
+        android:text="@string/mainMenuPhotoButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/mainMenuVideoButton"
+        android:id="@+id/mainMenuPhotoButton"
+        android:layout_alignEnd="@+id/mainMenuNewBunchButton"
+        android:layout_alignStart="@+id/mainMenuNewBunchButton" />
+
+    <Button
+        android:onClick="goToNewBunchActivityAction"
+        android:text="@string/mainMenuNewBunchButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:id="@+id/mainMenuNewBunchButton"
+        android:layout_above="@+id/mainMenuPhotoButton"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:onClick="goToSettingsActivityAction"
+        android:text="@string/mainMenuSettingsButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:id="@+id/mainMenuSettingsButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/mainMenuGalleryButton"
+        android:layout_alignStart="@+id/mainMenuGalleryButton" />
 </RelativeLayout>

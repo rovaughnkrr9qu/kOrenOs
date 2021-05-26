@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">HorizonCamera</string>
+    <string name="mainMenuNewBunchButtonText">New Bunch</string>
+    <string name="mainMenuPhotoButtonText">Photo</string>
+    <string name="mainMenuVideoButtonText">Video</string>
+    <string name="mainMenuGalleryButtonText">Gallery</string>
+    <string name="mainMenuSettingsButtonText">Settings</string>
 </resources>
