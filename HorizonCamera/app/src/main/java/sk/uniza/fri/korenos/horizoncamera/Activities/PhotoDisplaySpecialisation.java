@@ -31,7 +31,20 @@ public class PhotoDisplaySpecialisation extends CameraDisplayFragment {
         cameraShow.setMedia(true);
     }
 
-    public void takeCameraPictureAction(View view) throws IOException {
+    @Override
+    protected void mediaFunctions() {
+        super.mediaFunctions();
+
+        ImageView actionButton = (ImageView) getView().findViewById(R.id.mediaFragmentActionButton);
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                takeCameraPictureAction();
+            }
+        });
+    }
+
+    public void takeCameraPictureAction(){
         camera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] bytes, Camera camera) {

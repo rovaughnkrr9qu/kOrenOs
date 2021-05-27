@@ -51,30 +51,34 @@ public class CameraDisplayFragment extends Fragment {
 
         setMediaImages();
 
-        ImageView imageButton = (ImageView) getActivity().findViewById(R.id.mediaFragmentLightButton);
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        ImageView lightButton = (ImageView) getActivity().findViewById(R.id.mediaFragmentLightButton);
+        lightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 turnOnLight();
             }
         });
-        setLightButton(imageButton);
+        setLightButton(lightButton);
 
-        imageButton = (ImageView) getActivity().findViewById(R.id.mediaFragmentChangeCameraButton);
-        if(setCameraChangeOption(imageButton)){
-            imageButton.setOnClickListener(new View.OnClickListener() {
+        ImageView cameraCangeButton = (ImageView) getActivity().findViewById(R.id.mediaFragmentChangeCameraButton);
+        if(setCameraChangeOption(cameraCangeButton)){
+            cameraCangeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     changeCameraSide();
                 }
             });
         }
+
+        mediaFunctions();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         cameraClose();
+        cameraShow = null;
+        displayArea.removeAllViews();
     }
 
     private void turnOnLight(){
@@ -196,6 +200,10 @@ public class CameraDisplayFragment extends Fragment {
         tempImage = (ImageView) getView().findViewById(R.id.mediaFragmentGalleryButton);
         tempImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_portrait_black_24dp));
     }
+
+    protected void mediaFunctions(){
+    }
+
 
     private enum CameraSides {
         back, front

@@ -5,7 +5,6 @@ import android.graphics.Rect;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -98,6 +97,10 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        if(camera == null){
+            Log.e("Error", "SurfaceCreated- camera null");
+            return;
+        }
         try{
             camera.setPreviewDisplay(holder);
             camera.startPreview();
@@ -115,6 +118,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
             camera.stopPreview();
         } catch (Exception e){
         }
+
         camera.setDisplayOrientation(orientationChange());
 
         try {
