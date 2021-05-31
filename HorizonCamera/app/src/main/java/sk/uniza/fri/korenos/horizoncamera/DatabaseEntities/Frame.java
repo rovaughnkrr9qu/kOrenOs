@@ -10,7 +10,7 @@ import java.util.Objects;
  * Created by Markos on 12. 11. 2016.
  */
 
-public class Frame implements EntityInterface{
+public class Frame extends EntityInterface{
 
     public final static String NAME = "Frame";
     public final static String[] COLUMN_NAMES = {"FrameNumber", "FrameName", "IDBunch", "Format", "Angle", "Orientation"};
@@ -30,8 +30,6 @@ public class Frame implements EntityInterface{
     private Integer Format;
     private Double Angle;
     private Double Orientation;
-
-    private ArrayList<Object> composeAll = new ArrayList<>();
 
     public Frame(Integer paFrameNumber, String paFrameName, Integer paIDBunch, Integer paFormat, Double paAngle, Double paOrientation) {
         Angle = paAngle;
@@ -74,6 +72,11 @@ public class Frame implements EntityInterface{
     }
 
     @Override
+    public String[] getColumnNames() {
+        return COLUMN_NAMES;
+    }
+
+    @Override
     public String getTableName() {
         return NAME;
     }
@@ -89,29 +92,5 @@ public class Frame implements EntityInterface{
         if(Orientation!=null)content.put("Orientation", Orientation);
 
         return content;
-    }
-
-    @Override
-    public String getSelectionString() {
-        StringBuilder selectionString = new StringBuilder("");
-
-        for(int i = 0; i < COLUMN_NAMES.length; i++){
-            if(composeAll.get(i) != null) {
-                if(selectionString.toString().compareTo("")!=0){
-                    selectionString.append(" AND ");
-                }
-                if (composeAll.get(i).getClass() == String.class) {
-                    selectionString.append(COLUMN_NAMES[i] + "='" + (String) composeAll.get(i) + "'");
-                }
-                if (composeAll.get(i).getClass() == Integer.class) {
-                    selectionString.append(COLUMN_NAMES[i] + "=" + (Integer) composeAll.get(i) + "");
-                }
-                if (composeAll.get(i).getClass() == Double.class) {
-                    selectionString.append(COLUMN_NAMES[i] + "=" + (Double) composeAll.get(i) + "");
-                }
-            }
-        }
-
-        return selectionString.toString();
     }
 }

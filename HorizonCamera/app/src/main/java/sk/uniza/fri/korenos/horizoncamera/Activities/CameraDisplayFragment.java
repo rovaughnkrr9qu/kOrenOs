@@ -1,5 +1,6 @@
 package sk.uniza.fri.korenos.horizoncamera.Activities;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import sk.uniza.fri.korenos.horizoncamera.R;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationDemandingActivityInterface;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.CameraView;
 
 /**
@@ -203,7 +205,6 @@ public class CameraDisplayFragment extends Fragment {
 
     protected void mediaFunctions(){
     }
-
 
     private enum CameraSides {
         back, front
