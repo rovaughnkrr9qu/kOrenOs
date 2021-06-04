@@ -12,29 +12,32 @@ import java.util.Arrays;
 public class Bunch extends EntityInterface{
 
     public final static String NAME = "Bunch";
-    public final static String[] COLUMN_NAMES = {"IDBunch","BunchName", "Date", "Path", "Latitude", "Longitude"};
-    public final static String[] COLUMN_TYPES = {"integer","text", "integer", "text", "real", "real"};
+    public final static String[] COLUMN_NAMES = {"IDBunch","BunchName", "Date", "Path", "SaveAddData", "Latitude", "Longitude"};
+    public final static String[] COLUMN_TYPES = {"integer","text", "integer", "text", "integer", "real", "real"};
     public final static ArrayList<String> COLUMN_SPECIFICATIONS =
             new ArrayList<>(Arrays.asList(
                     "primary key autoincrement",
                     "not null unique",
                     "not null",
+                    "not null",
                     "not null"));
     public final static String[] SPECIAL_CONDITION = {};
-    public static final String CREATE_TABLE_STRING = "create table Bunch(IDBunch integer primary key autoincrement,BunchName text not null unique,Date integer not null,Path text not null,Latitude real,Longitude real);";
+    public static final String CREATE_TABLE_STRING = "create table Bunch(IDBunch integer primary key autoincrement,BunchName text not null unique,Date integer not null,Path text not null,SaveAddData integer not null,Latitude real,Longitude real);";
 
     private Integer IDBunch;
     private String BunchName;
     private Integer Date;
     private String Path;
+    private Integer SaveAddData;
     private Double Latitude;
     private Double Longitude;
 
-    public Bunch(Integer paIDBunch, String paBunchName, Integer paDate, String paPath, Double paLatitude, Double paLongitude) {
+    public Bunch(Integer paIDBunch, String paBunchName, Integer paDate, String paPath, Integer psSaveAddData, Double paLatitude, Double paLongitude) {
         IDBunch = paIDBunch;
         BunchName = paBunchName;
         Date = paDate;
         Path = paPath;
+        SaveAddData = psSaveAddData;
         Latitude = paLatitude;
         Longitude = paLongitude;
 
@@ -42,6 +45,7 @@ public class Bunch extends EntityInterface{
         composeAll.add(BunchName);
         composeAll.add(Date);
         composeAll.add(Path);
+        composeAll.add(SaveAddData);
         composeAll.add(Latitude);
         composeAll.add(Longitude);
     }
@@ -70,6 +74,10 @@ public class Bunch extends EntityInterface{
         return Longitude;
     }
 
+    public Integer getSaveAddData() {
+        return SaveAddData;
+    }
+
     @Override
     public String[] getColumnNames() {
         return COLUMN_NAMES;
@@ -87,6 +95,7 @@ public class Bunch extends EntityInterface{
         if(BunchName!=null)content.put("BunchName", BunchName);
         if(Date!=null)content.put("Date", Date);
         if(Path!=null)content.put("Path", Path);
+        if(SaveAddData!=null)content.put("SaveAddData", SaveAddData);
         if(Latitude!=null)content.put("Latitude", Latitude);
         if(Longitude!=null)content.put("Longitude", Longitude);
 

@@ -31,8 +31,8 @@ public class MediaScreenActivity extends FragmentActivity {
     }
 
     public void goToSettingsActivityAction(View view){
-        /*Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);*/
+        Intent intent = new Intent(this,SettingsActivity.class);
+        startActivity(intent);
     }
 
     public void goToMainAction(View view){

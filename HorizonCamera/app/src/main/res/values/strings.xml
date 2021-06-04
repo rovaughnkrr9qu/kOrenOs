@@ -5,4 +5,13 @@
     <string name="mainMenuVideoButtonText">Video</string>
     <string name="mainMenuGalleryButtonText">Gallery</string>
     <string name="mainMenuSettingsButtonText">Settings</string>
+    <string name="settingsActivityLabel">Settings</string>
+    <string name="newBunchActivityLabel">New bunch</string>
+    <string name="galleryActivityLabel">Gallery</string>
+    <string name="settingsSaveAdditionalDataCheckBoxText">Save additional data</string>
+    <string name="newBunchActivityCreateNewBunchLabelText">Set name of new bunch</string>
+    <string name="newBunchActivityChooseExistingBunchButtonText">Choose existing bunch</string>
+    <string name="newBunchActivitySaveAdditionalDataCheckBoxText">Save additional data</string>
+    <string name="newBunchActivityPictureMediaCheckBoxText">Picture media choose (false- video)</string>
+    <string name="newBunchActivitySaveBunchButtonText">Open bunch</string>
 </resources>

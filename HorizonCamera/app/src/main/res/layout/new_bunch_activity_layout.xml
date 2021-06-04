@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="@string/newBunchActivityCreateNewBunchLabelText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/newBunchActivityCreateNewBunchLabel"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/NewBunchActivityNewBunchNameText"
+        android:layout_marginTop="13dp"
+        android:layout_below="@+id/newBunchActivityCreateNewBunchLabel"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:onClick="findExistingBunchAction"
+        android:text="@string/newBunchActivityChooseExistingBunchButtonText"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/newBunchActivityChooseExistingBunchButton"
+        android:layout_below="@+id/NewBunchActivityNewBunchNameText"
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:text="@string/newBunchActivitySaveAdditionalDataCheckBoxText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/newBunchActivityChooseExistingBunchButton"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="61dp"
+        android:id="@+id/newBunchActivitySaveAdditionalDataCheckBox"
+        android:layout_alignParentEnd="true" />
+
+    <CheckBox
+        android:text="@string/newBunchActivityPictureMediaCheckBoxText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/newBunchActivitySaveAdditionalDataCheckBox"
+        android:layout_alignParentStart="true"
+        android:id="@+id/newBunchActivityPictureMediaCheckBox"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:onClick="createBunchAction"
+        android:text="@string/newBunchActivitySaveBunchButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/newBunchActivityCreateBunchButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="19dp" />
+</RelativeLayout>

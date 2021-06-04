@@ -1,6 +1,7 @@
 package sk.uniza.fri.korenos.horizoncamera.ServiceModules;
 
 import android.media.MediaRecorder;
+import android.os.Environment;
 import android.view.Surface;
 
 import java.io.File;
@@ -11,7 +12,7 @@ import java.io.File;
 
 public class MediaLocationsAndSettings {
 
-    private static String baseLocation = "/storage/emulated/0/DCIM/Camera/";
+    private static String baseLocation = Environment.getExternalStorageDirectory() + "/HorizonCamera/";
     private static String photoType = ".jpeg";
     private static String videoType = ".mp4";
     private static String photoBaseName = "photo";
@@ -20,16 +21,21 @@ public class MediaLocationsAndSettings {
     private static int counterVideo = 0;
     private static int videoFrameRate = 30;
     private static boolean soundOn = true;
+    private static boolean saveAdditionalData = true;
 
     public static void setBaseLocation(String location){
         baseLocation = location;
     }
 
-    public static void setpPotoBaseName(String baseName){
+    public static String getBaseLocation(){
+        return baseLocation;
+    }
+
+    public static void setPhotoBaseName(String baseName){
         photoBaseName = baseName;
     }
 
-    public static void setpVideoBaseName(String baseName){
+    public static void setVideoBaseName(String baseName){
         videoBaseName = baseName;
     }
 
@@ -56,6 +62,13 @@ public class MediaLocationsAndSettings {
         return soundOn;
     }
 
+    public static void setSaveAdditionalData(boolean saveAdditionalDataStatus){
+        saveAdditionalData = saveAdditionalDataStatus;
+    }
+
+    public static boolean getSaveAdditionalData(){
+        return soundOn;
+    }
 
     public static int orientationCalculatior(int momentalRotation){
         switch(momentalRotation){
