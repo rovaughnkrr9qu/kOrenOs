@@ -36,6 +36,9 @@ public abstract class EntityInterface {
                 if (composeAll.get(i).getClass() == Double.class) {
                     selectionString.append(getColumnNames()[i] + "=" + (Double) composeAll.get(i) + "");
                 }
+                if (composeAll.get(i).getClass() == Long.class) {
+                    selectionString.append(getColumnNames()[i] + "=" + (Long) composeAll.get(i) + "");
+                }
             }
         }
 

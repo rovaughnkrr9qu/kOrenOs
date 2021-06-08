@@ -15,7 +15,12 @@ import sk.uniza.fri.korenos.horizoncamera.R;
 
 public class MediaScreenActivity extends FragmentActivity {
 
-    private mediaType mediaOpened;
+    public static final String VIDEO_MEDIA_CODE = "video";
+    public static final String PHOTO_MEDIA_CODE = "photo";
+
+    public static final String MEDIA_NAME_EXTRAS_NAME = "mediaName";
+
+    private String mediaOpened;
     private CameraDisplayFragment activeFragment;
 
     @Override
@@ -25,7 +30,7 @@ public class MediaScreenActivity extends FragmentActivity {
         setContentView(R.layout.media_activity_layout);
 
         Bundle extrasData = getIntent().getExtras();
-        findMediaType(extrasData.getString("mediaName"));
+        mediaOpened = extrasData.getString(MEDIA_NAME_EXTRAS_NAME);
 
         setFragment();
     }
@@ -50,13 +55,13 @@ public class MediaScreenActivity extends FragmentActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         switch(mediaOpened){
-            case photo:
+            case PHOTO_MEDIA_CODE:
                 activeFragment = new VideoDisplaySpecialisation();
-                mediaOpened = mediaType.video;
+                mediaOpened = VIDEO_MEDIA_CODE;
                 break;
-            case video:
+            case VIDEO_MEDIA_CODE:
                 activeFragment = new PhotoDisplaySpecialisation();
-                mediaOpened = mediaType.photo;
+                mediaOpened = PHOTO_MEDIA_CODE;
                 break;
         }
 
@@ -69,10 +74,10 @@ public class MediaScreenActivity extends FragmentActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         switch(mediaOpened){
-            case photo:
+            case PHOTO_MEDIA_CODE:
                 activeFragment = new PhotoDisplaySpecialisation();
                 break;
-            case video:
+            case VIDEO_MEDIA_CODE:
                 activeFragment = new VideoDisplaySpecialisation();
                 break;
         }
@@ -81,24 +86,9 @@ public class MediaScreenActivity extends FragmentActivity {
         fragmentTransaction.commit();
     }
 
-    private void findMediaType(String type){
-        switch (type){
-            case "photo":
-                mediaOpened = mediaType.photo;
-                break;
-            case "video":
-                mediaOpened = mediaType.video;
-                break;
-        }
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
         activeFragment.onDestroy();
-    }
-
-    private enum mediaType {
-        photo, video
     }
 }

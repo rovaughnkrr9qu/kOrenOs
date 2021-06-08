@@ -14,12 +14,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import sk.uniza.fri.korenos.horizoncamera.R;
-import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettings;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationDemandingActivityInterface;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationService;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.AutomaticModeInterface;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.OrientationDataPackage;
-import sk.uniza.fri.korenos.horizoncamera.SupportClass.PanoramaMode;
 
 /**
  * Created by Markos on 11. 11. 2016.
@@ -68,7 +67,7 @@ public class PhotoDisplaySpecialisation extends CameraDisplayFragment implements
     }
 
     public void takeCameraPictureAction(){
-        if(MediaLocationsAndSettings.getSaveAdditionalData()) {
+        if(MediaLocationsAndSettingsTimeService.getSaveAdditionalData()) {
             orientationService = new OrientationService(this, (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE));
             orientationService.startOrientationSensors();
             photoSequence = true;
@@ -85,7 +84,7 @@ public class PhotoDisplaySpecialisation extends CameraDisplayFragment implements
                 orientationService.stopOrientationSensors();
 
                 try {
-                    String path = MediaLocationsAndSettings.getPhotoName();
+                    String path = MediaLocationsAndSettingsTimeService.getPhotoName();
                     if(path == null){
                         Log.e("Error", "Not possible to find proper photo name.");
                         return;
@@ -136,5 +135,9 @@ public class PhotoDisplaySpecialisation extends CameraDisplayFragment implements
             takePicture();
             photoSequence = false;
         }
+    }
+
+    @Override
+    public void GPSDataReady() {
     }
 }

@@ -16,17 +16,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToGalleryActivityAction(View view) {
+        Intent intent = new Intent(this,GalleryActivity.class);
+        intent.putExtra(GalleryActivity.GALLERY_TYPE_EXTRAS_NAME, GalleryActivity.BUNCH_GALLERY_CODE);
+        startActivity(intent);
     }
 
     public void goToPhotoActivityAction(View view) {
         Intent intent = new Intent(this,MediaScreenActivity.class);
-        intent.putExtra("mediaName", "photo");
+        intent.putExtra(MediaScreenActivity.MEDIA_NAME_EXTRAS_NAME, MediaScreenActivity.PHOTO_MEDIA_CODE);
         startActivity(intent);
     }
 
     public void goToVideoActivityAction(View view) {
         Intent intent = new Intent(this,MediaScreenActivity.class);
-        intent.putExtra("mediaName", "video");
+        intent.putExtra(MediaScreenActivity.MEDIA_NAME_EXTRAS_NAME, MediaScreenActivity.VIDEO_MEDIA_CODE);
         startActivity(intent);
     }
 

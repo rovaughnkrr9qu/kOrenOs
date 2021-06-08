@@ -10,7 +10,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import sk.uniza.fri.korenos.horizoncamera.R;
-import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettings;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 
 /**
  * Created by Markos on 10. 11. 2016.
@@ -147,9 +147,9 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment {
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
-        profile.fileFormat = MediaLocationsAndSettings.selectedVideoFormat();
+        profile.fileFormat = MediaLocationsAndSettingsTimeService.selectedVideoFormat();
         mediaRecorder.setProfile(profile);
-        mediaRecorder.setOutputFile(MediaLocationsAndSettings.getVideoName());
+        mediaRecorder.setOutputFile(MediaLocationsAndSettingsTimeService.getVideoName());
         mediaRecorder.setOrientationHint(cameraShow.orientationChange());
         mediaRecorder.setMaxDuration(600000); // set maximum duration
         mediaRecorder.setMaxFileSize(50000000); // set maximum file size

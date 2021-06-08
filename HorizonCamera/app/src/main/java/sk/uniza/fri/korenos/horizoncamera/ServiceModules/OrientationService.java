@@ -41,6 +41,7 @@ public class OrientationService implements SensorEventListener{
     private LocationListener locationAction = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
+            demandingActivity.GPSDataReady();
         }
 
         @Override
@@ -187,10 +188,10 @@ public class OrientationService implements SensorEventListener{
 
             if(actualOrientationPackage == null){
                 actualOrientationPackage = new OrientationDataPackage(azimuthStatisticAverage.getAverage(),
-                        pitchStatisticAverage.getAverage(), getCurrentTime());
+                        pitchStatisticAverage.getAverage(), MediaLocationsAndSettingsTimeService.getCurrentTime());
             }else{
                 actualOrientationPackage.resetAll(azimuthStatisticAverage.getAverage(),
-                        pitchStatisticAverage.getAverage(), getCurrentTime());
+                        pitchStatisticAverage.getAverage(), MediaLocationsAndSettingsTimeService.getCurrentTime());
             }
 
             for(DataVisitorInterface visitor : dataVisitor){
@@ -220,10 +221,6 @@ public class OrientationService implements SensorEventListener{
 
     public void removeDataVisitor(DataVisitorInterface visitor){
         dataVisitor.remove(visitor);
-    }
-
-    public long getCurrentTime(){
-        return System.currentTimeMillis();
     }
 
 

@@ -26,13 +26,13 @@ public class Bunch extends EntityInterface{
 
     private Integer IDBunch;
     private String BunchName;
-    private Integer Date;
+    private Long Date;
     private String Path;
     private Integer SaveAddData;
     private Double Latitude;
     private Double Longitude;
 
-    public Bunch(Integer paIDBunch, String paBunchName, Integer paDate, String paPath, Integer psSaveAddData, Double paLatitude, Double paLongitude) {
+    public Bunch(Integer paIDBunch, String paBunchName, Long paDate, String paPath, Integer psSaveAddData, Double paLatitude, Double paLongitude) {
         IDBunch = paIDBunch;
         BunchName = paBunchName;
         Date = paDate;
@@ -58,7 +58,7 @@ public class Bunch extends EntityInterface{
         return BunchName;
     }
 
-    public Integer getDate() {
+    public Long getDate() {
         return Date;
     }
 

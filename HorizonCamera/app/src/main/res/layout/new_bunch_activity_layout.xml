@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-        android:id="@+id/NewBunchActivityNewBunchNameText"
+        android:id="@+id/newBunchActivityNewBunchNameText"
         android:layout_marginTop="13dp"
         android:layout_below="@+id/newBunchActivityCreateNewBunchLabel"
         android:layout_alignParentStart="true" />
@@ -28,7 +28,7 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/newBunchActivityChooseExistingBunchButton"
-        android:layout_below="@+id/NewBunchActivityNewBunchNameText"
+        android:layout_below="@+id/newBunchActivityNewBunchNameText"
         android:layout_alignParentStart="true" />
 
     <CheckBox

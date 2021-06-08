@@ -10,9 +10,9 @@ import java.io.File;
  * Created by Markos on 10. 11. 2016.
  */
 
-public class MediaLocationsAndSettings {
+public class MediaLocationsAndSettingsTimeService {
 
-    private static String baseLocation = Environment.getExternalStorageDirectory() + "/HorizonCamera/";
+    private static String baseLocation = Environment.getExternalStorageDirectory() + "/HorizonCamera";
     private static String photoType = ".jpeg";
     private static String videoType = ".mp4";
     private static String photoBaseName = "photo";
@@ -60,6 +60,10 @@ public class MediaLocationsAndSettings {
 
     public static boolean getSoundOn(){
         return soundOn;
+    }
+
+    public static long getCurrentTime(){
+        return System.currentTimeMillis();
     }
 
     public static void setSaveAdditionalData(boolean saveAdditionalDataStatus){

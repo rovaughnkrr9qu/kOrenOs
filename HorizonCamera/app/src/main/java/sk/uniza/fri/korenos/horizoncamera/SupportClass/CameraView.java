@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettings;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 
 /**
  * Created by Markos on 10. 11. 2016.
@@ -147,7 +147,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         WindowManager manager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         int momentalRotation = manager.getDefaultDisplay().getRotation();
 
-        return MediaLocationsAndSettings.orientationCalculatior(momentalRotation);
+        return MediaLocationsAndSettingsTimeService.orientationCalculatior(momentalRotation);
     }
 
     private Rect countRect(float xCoordination, float yCoordination, int moveX, int moveY){
