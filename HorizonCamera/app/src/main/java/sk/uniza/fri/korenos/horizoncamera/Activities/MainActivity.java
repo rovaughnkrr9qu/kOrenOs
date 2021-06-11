@@ -16,8 +16,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToGalleryActivityAction(View view) {
-        Intent intent = new Intent(this,GalleryActivity.class);
-        intent.putExtra(GalleryActivity.GALLERY_TYPE_EXTRAS_NAME, GalleryActivity.BUNCH_GALLERY_CODE);
+        Intent intent = new Intent(this,BunchGalleryActivity.class);
+        intent.putExtra(GalleryActivityTemplate.GALLERY_TYPE_EXTRAS_NAME, GalleryActivityTemplate.BUNCH_GALLERY_CODE);
         startActivity(intent);
     }
 

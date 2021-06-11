@@ -2,9 +2,13 @@ package sk.uniza.fri.korenos.horizoncamera.ServiceModules;
 
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.text.style.TtsSpan;
 import android.view.Surface;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by Markos on 10. 11. 2016.
@@ -64,6 +68,10 @@ public class MediaLocationsAndSettingsTimeService {
 
     public static long getCurrentTime(){
         return System.currentTimeMillis();
+    }
+
+    public static String transformToTime(long time){
+        return new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.UK).format(new Date(time));
     }
 
     public static void setSaveAdditionalData(boolean saveAdditionalDataStatus){

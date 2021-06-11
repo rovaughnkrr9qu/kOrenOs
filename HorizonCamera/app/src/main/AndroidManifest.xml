@@ -33,7 +33,10 @@
             android:theme="@style/AppThemeWithActionBar"
             android:label="@string/newBunchActivityLabel"
             android:parentActivityName=".Activities.MainActivity"/>
-        <activity android:name=".Activities.GalleryActivity"
+        <activity android:name=".Activities.BunchGalleryActivity"
+            android:theme="@style/AppThemeWithActionBar"
+            android:label="@string/galleryActivityLabel"/>
+        <activity android:name=".Activities.FrameGalleryActivity"
             android:theme="@style/AppThemeWithActionBar"
             android:label="@string/galleryActivityLabel"/>
 

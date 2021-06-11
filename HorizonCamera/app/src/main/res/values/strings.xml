@@ -14,4 +14,18 @@
     <string name="newBunchActivitySaveAdditionalDataCheckBoxText">Save additional data</string>
     <string name="newBunchActivityPictureMediaCheckBoxText">Picture media choose (false- video)</string>
     <string name="newBunchActivitySaveBunchButtonText">Open bunch</string>
+    <string name="galleryMenuDeleteOptionLabelText">Delete</string>
+    <string name="galleryMenuSendOptionLabelText">Send</string>
+    <string name="galleryOptionCancelButtonText">Cancel</string>
+    <string name="galleryOptionActionSendButtonText">Send</string>
+    <string name="galleryOptionActionDeleteButtonText">Delete</string>
+    <string name="galleryItemDateLabel">Date: </string>
+    <string name="galleryItemGPSNotFoundLabel">GPS: unknown</string>
+    <string name="galleryItemGPSLabel">GPS: </string>
+    <string name="galleryItemPictureNumberLabel">Pictures in bunch: </string>
+    <string name="galleryBunchTitleText">Bunch </string>
+    <string name="galleryBunchesTitleText">Gallery of bunches</string>
+    <string name="newBunchActivityBunchNotCreatedToastText">It was not possible to create bunch with this name.</string>
+    <string name="newBunchActivityGPSWaitingToastText">Wait for GPS localisation.</string>
+    <string name="newBunchActivityGPSFoungToastText">GPS location found</string>
 </resources>

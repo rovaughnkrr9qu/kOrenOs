@@ -35,21 +35,14 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
         setContentView(R.layout.new_bunch_activity_layout);
     }
 
-
     public void findExistingBunchAction(View view) {
 
     }
 
     public void createBunchAction(View view) {
+        disablingFunctions();
+
         EditText bunchNameEditText = (EditText) findViewById(R.id.newBunchActivityNewBunchNameText);
-        bunchNameEditText.setEnabled(false);
-
-        CheckBox additionalInformationSave = (CheckBox) findViewById(R.id.newBunchActivitySaveAdditionalDataCheckBox);
-        additionalInformationSave.setEnabled(false);
-
-        CheckBox pictureMediaCheckBox = (CheckBox) findViewById(R.id.newBunchActivityPictureMediaCheckBox);
-        pictureMediaCheckBox.setEnabled(false);
-
         String folderName = bunchNameEditText.getText().toString();
 
         bunchPath = MediaLocationsAndSettingsTimeService.getBaseLocation()+"/"+folderName;
@@ -58,6 +51,17 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
         if(checkOrCreate(bunchPath)){
             addToDatabase();
         }
+    }
+
+    private void disablingFunctions(){
+        EditText bunchNameEditText = (EditText) findViewById(R.id.newBunchActivityNewBunchNameText);
+        bunchNameEditText.setEnabled(false);
+
+        CheckBox additionalInformationSave = (CheckBox) findViewById(R.id.newBunchActivitySaveAdditionalDataCheckBox);
+        additionalInformationSave.setEnabled(false);
+
+        CheckBox pictureMediaCheckBox = (CheckBox) findViewById(R.id.newBunchActivityPictureMediaCheckBox);
+        pictureMediaCheckBox.setEnabled(false);
     }
 
     private boolean checkOrCreate(String path){
@@ -75,7 +79,7 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
             orientationService = new OrientationService(this, (SensorManager) getSystemService(SENSOR_SERVICE));
             orientationService.getMomentalGPSLocation();
 
-            Toast.makeText(this, "Wait for GPS localisation.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.newBunchActivityGPSWaitingToastText, Toast.LENGTH_LONG).show();
         }else{
             createBunchInstance(false, null);
         }
@@ -86,7 +90,7 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
         Bunch newBunch;
 
         if(saveInformation){
-            Toast.makeText(this, "GPS location found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.newBunchActivityGPSFoungToastText, Toast.LENGTH_SHORT).show();
 
             newBunch = new Bunch(null, folderName, MediaLocationsAndSettingsTimeService.getCurrentTime(),
                     bunchPath, 1, GPSlocation.getLatitude(), GPSlocation.getLongitude());
@@ -96,7 +100,7 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
         }
 
         if(DatabaseService.getDbInstance(this).insertRow(newBunch) == -1){
-            Toast.makeText(this, "It wasn't possible to create bunch with this name.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.newBunchActivityBunchNotCreatedToastText), Toast.LENGTH_SHORT).show();
         }
     }
 

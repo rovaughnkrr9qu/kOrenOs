@@ -46,7 +46,7 @@ public class MediaScreenActivity extends FragmentActivity {
     }
 
     public void goToGalleryActivityAction(View view){
-        /*Intent intent = new Intent(this, GalleryActivity.class);
+        /*Intent intent = new Intent(this, GalleryActivityTemplate.class);
         startActivity(intent);*/
     }
 

@@ -14,13 +14,17 @@ public class GalleryListDataPackage {
     private String itemFirstProperty;
     private String itemSecondProperty;
     private String itemThirdProperty;
+    private String itemForthProperty;
 
-    public GalleryListDataPackage(Bitmap itemImage, String itemMainName, String itemFirstProperty, String itemSecondProperty, String itemThirdProperty) {
+    public GalleryListDataPackage(Bitmap itemImage, String itemMainName, String itemFirstProperty, String itemSecondProperty,
+                                  String itemThirdProperty, String itemForthProperty) {
         this.itemImage = itemImage;
         this.itemMainName = itemMainName;
         this.itemFirstProperty = itemFirstProperty;
         this.itemSecondProperty = itemSecondProperty;
         this.itemThirdProperty = itemThirdProperty;
+
+        this.itemForthProperty = itemForthProperty;
     }
 
     public Bitmap getItemImage() {
@@ -41,5 +45,9 @@ public class GalleryListDataPackage {
 
     public String getItemThirdProperty() {
         return itemThirdProperty;
+    }
+
+    public String getItemForthProperty() {
+        return itemForthProperty;
     }
 }

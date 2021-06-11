@@ -1,10 +1,14 @@
 package sk.uniza.fri.korenos.horizoncamera.SupportClass;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -20,6 +24,7 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private GalleryListDataPackage itemData;
+        private GalleryItemClickedInterface listeningActivity;
 
         private ImageView itemImage;
         private TextView itemMainName;
@@ -27,9 +32,11 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
         private TextView itemSecondProperty;
         private TextView itemThirdProperty;
 
-        private GalleryItemClickedInterface listeningActivity;
+        private int highlightTime = 500;
+        private boolean highlighted = false;
+        ViewHolder selfInstance;
 
-        public ViewHolder(View v, GalleryItemClickedInterface activity) {
+        public ViewHolder(View v, final GalleryItemClickedInterface activity) {
             super(v);
             itemImage = (ImageView) v.findViewById(R.id.itemImage);
             itemMainName = (TextView) v.findViewById(R.id.itemMainName);
@@ -39,10 +46,21 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
 
             listeningActivity = activity;
 
+            selfInstance = this;
+
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listeningActivity.itemHasBeenClicked(itemData);
+                    if(listeningActivity.isSelectable()) {
+                        RelativeLayout actualCardView = (RelativeLayout) itemView.findViewById(R.id.itemBackgroundLayout);
+
+                        if (highlighted) {
+                            changeHighlightState(highlighted, actualCardView, false);
+                        } else {
+                            changeHighlightState(highlighted, actualCardView, false);
+                        }
+                    }
+                    listeningActivity.itemHasBeenClicked(selfInstance);
                 }
             });
         }
@@ -67,17 +85,58 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
             return itemThirdProperty;
         }
 
-        public void setItemData(GalleryListDataPackage itemData ){
+        public GalleryListDataPackage getItemData() {
+            return itemData;
+        }
+
+        public void setItemData(GalleryListDataPackage itemData){
             this.itemData = itemData;
+        }
+
+        public void unlight(){
+            RelativeLayout actualCardView = (RelativeLayout) itemView.findViewById(R.id.itemBackgroundLayout);
+            changeHighlightState(true, actualCardView, false);
+        }
+
+        public void deleteAnimation(){
+            CardView actualCardView = (CardView) itemView.findViewById(R.id.itemCardView);
+            changeHighlightState(true, actualCardView, true);
+        }
+
+        private void changeHighlightState(boolean isHighlighted, final View target, final boolean deleting){
+            final float finalAlpha;
+
+            if(isHighlighted){
+                target.setAlpha(1f);
+                finalAlpha = 0f;
+                highlighted = false;
+            }else{
+                target.setAlpha(0f);
+                finalAlpha = 1f;
+                highlighted = true;
+            }
+
+            target.animate().alpha(finalAlpha).setDuration(highlightTime).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    target.setAlpha(finalAlpha);
+                    if(deleting) {
+                        listeningActivity.onDeleteAnimationFinished(selfInstance);
+                    }
+                }
+            });
         }
     }
 
     private GalleryItemClickedInterface activity;
     private List<GalleryListDataPackage> listData;
+    private boolean bunchListAdapter;
 
-    public GalleryRecyclerAdapter(List<GalleryListDataPackage> dataForList, GalleryItemClickedInterface demandingActivity) {
+    public GalleryRecyclerAdapter(List<GalleryListDataPackage> dataForList, GalleryItemClickedInterface demandingActivity, boolean bunchList) {
         activity = demandingActivity;
         listData = dataForList;
+        bunchListAdapter = bunchList;
     }
 
     @Override
@@ -94,9 +153,20 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
 
         holder.getItemImage().setImageBitmap(listData.get(position).getItemImage());
         holder.getItemMainName().setText(listData.get(position).getItemMainName());
-        holder.getItemFirstProperty().setText(listData.get(position).getItemFirstProperty());
-        holder.getItemSecondProperty().setText(listData.get(position).getItemSecondProperty());
-        holder.getItemThirdProperty().setText(listData.get(position).getItemThirdProperty());
+
+        if(bunchListAdapter) {
+            holder.getItemFirstProperty().setText("Date: "+listData.get(position).getItemFirstProperty());
+
+            if(listData.get(position).getItemSecondProperty() == null || listData.get(position).getItemThirdProperty() == null){
+                holder.getItemSecondProperty().setText("GPS: unknown");
+            }else{
+                holder.getItemSecondProperty().setText("GPS: "+listData.get(position).getItemSecondProperty()
+                        + ", " + listData.get(position).getItemThirdProperty());
+            }
+            holder.getItemThirdProperty().setText("Pictures in bunch: "+listData.get(position).getItemForthProperty());
+        }else{
+
+        }
     }
 
     @Override
@@ -106,6 +176,8 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
 
 
     public interface GalleryItemClickedInterface{
-        void itemHasBeenClicked(GalleryListDataPackage detailInfo);
+        void itemHasBeenClicked(ViewHolder listItem);
+        boolean isSelectable();
+        void onDeleteAnimationFinished(ViewHolder listItem);
     }
 }

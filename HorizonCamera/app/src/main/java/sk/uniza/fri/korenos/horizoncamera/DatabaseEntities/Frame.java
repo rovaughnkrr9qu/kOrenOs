@@ -13,37 +13,41 @@ import java.util.Objects;
 public class Frame extends EntityInterface{
 
     public final static String NAME = "Frame";
-    public final static String[] COLUMN_NAMES = {"FrameNumber", "FrameName", "IDBunch", "Format", "Angle", "Orientation"};
-    public final static String[] COLUMN_TYPES = {"integer","text",  "integer", "integer", "real", "real"};
+    public final static String[] COLUMN_NAMES = {"FrameNumber", "FrameName", "IDBunch", "Date", "Format", "Pitch", "Orientation"};
+    public final static String[] COLUMN_TYPES = {"integer","text", "integer", "integer", "integer", "real", "real"};
     public final static ArrayList<String> COLUMN_SPECIFICATIONS =
             new ArrayList<>(Arrays.asList(
                     "not null",
                     "not null",
                     "not null references Bunch(IDBunch)",
+                    "not null",
                     "not null"));
     public final static String[] SPECIAL_CONDITION = {"primary key (FrameNumber, FrameName)"};
-    public static final String CREATE_TABLE_STRING = "create table Frame(FrameNumber integer not null,FrameName text not null,IDBunch integer not null references Bunch(IDBunch),Format integer not null,Angle real,Orientation real,primary key (FrameNumber, FrameName));";
+    public static final String CREATE_TABLE_STRING = "create table Frame(FrameNumber integer not null,FrameName text not null,IDBunch integer not null references Bunch(IDBunch),Date integer not null, Format integer not null,Pitch real,Orientation real,primary key (FrameNumber, FrameName));";
 
     private Integer FrameNumber;
     private String FrameName;
     private Integer IDBunch;
+    private Long Date;
     private Integer Format;
-    private Double Angle;
+    private Double Pitch;
     private Double Orientation;
 
-    public Frame(Integer paFrameNumber, String paFrameName, Integer paIDBunch, Integer paFormat, Double paAngle, Double paOrientation) {
-        Angle = paAngle;
+    public Frame(Integer paFrameNumber, String paFrameName, Integer paIDBunch, Long paDate, Integer paFormat, Double paPitch, Double paOrientation) {
+        Pitch = paPitch;
         FrameNumber = paFrameNumber;
         FrameName = paFrameName;
         IDBunch = paIDBunch;
+        Date = paDate;
         Format = paFormat;
         Orientation = paOrientation;
 
         composeAll.add(FrameNumber);
         composeAll.add(FrameName);
         composeAll.add(IDBunch);
+        composeAll.add(Date);
         composeAll.add(Format);
-        composeAll.add(Angle);
+        composeAll.add(Pitch);
         composeAll.add(Orientation);
     }
 
@@ -63,12 +67,16 @@ public class Frame extends EntityInterface{
         return Format;
     }
 
-    public Double getAngle() {
-        return Angle;
+    public Double getPitch() {
+        return Pitch;
     }
 
     public Double getOrientation() {
         return Orientation;
+    }
+
+    public Long getDate() {
+        return Date;
     }
 
     @Override
@@ -87,8 +95,9 @@ public class Frame extends EntityInterface{
         if(FrameNumber!=null)content.put("FrameNumber", FrameNumber);
         if(FrameName!=null)content.put("FrameName", FrameName);
         if(IDBunch!=null)content.put("IDBunch", IDBunch);
+        if(Date!=null)content.put("Date", Date);
         if(Format!=null)content.put("Format", Format);
-        if(Angle!=null)content.put("Angle", Angle);
+        if(Pitch!=null)content.put("Angle", Pitch);
         if(Orientation!=null)content.put("Orientation", Orientation);
 
         return content;
