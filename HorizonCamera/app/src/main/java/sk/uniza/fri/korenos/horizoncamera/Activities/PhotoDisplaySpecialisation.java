@@ -18,6 +18,7 @@ import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettin
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationDemandingActivityInterface;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationService;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.AutomaticModeInterface;
+import sk.uniza.fri.korenos.horizoncamera.SupportClass.MediaDataSaver;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.OrientationDataPackage;
 
 /**
@@ -63,7 +64,9 @@ public class PhotoDisplaySpecialisation extends CameraDisplayFragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        orientationService.stopOrientationSensors();
+        if(orientationService != null) {
+            orientationService.stopOrientationSensors();
+        }
     }
 
     public void takeCameraPictureAction(){
@@ -74,31 +77,20 @@ public class PhotoDisplaySpecialisation extends CameraDisplayFragment implements
         }else{
             takePicture();
         }
+        takePicture();
     }
 
     private void takePicture(){
         camera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] bytes, Camera camera) {
-                OrientationDataPackage ODP = orientationService.getActualOrientation();
-                orientationService.stopOrientationSensors();
-
-                try {
-                    String path = MediaLocationsAndSettingsTimeService.getPhotoName();
-                    if(path == null){
-                        Log.e("Error", "Not possible to find proper photo name.");
-                        return;
-                    }
-                    FileOutputStream fos = new FileOutputStream(path);
-                    fos.write(bytes);
-                    fos.close();
-                } catch (FileNotFoundException e) {
-                    Log.e("Error", "File not found: " + e.getMessage());
-                    return;
-                } catch (IOException e) {
-                    Log.e("Error", "Error accessing file: " + e.getMessage());
-                    return;
+                OrientationDataPackage orientationData = null;
+                if(MediaLocationsAndSettingsTimeService.getSaveAdditionalData()) {
+                    orientationData = orientationService.getActualOrientation();
+                    orientationService.stopOrientationSensors();
                 }
+
+                MediaDataSaver.savePhoto(bytes, bunchName, orientationData, getApplicationContext());
                 restartPreview();
             }
         });

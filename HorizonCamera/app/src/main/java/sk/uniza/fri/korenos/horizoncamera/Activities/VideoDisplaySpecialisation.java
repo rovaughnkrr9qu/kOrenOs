@@ -149,7 +149,7 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment {
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
         profile.fileFormat = MediaLocationsAndSettingsTimeService.selectedVideoFormat();
         mediaRecorder.setProfile(profile);
-        mediaRecorder.setOutputFile(MediaLocationsAndSettingsTimeService.getVideoName());
+        mediaRecorder.setOutputFile(MediaLocationsAndSettingsTimeService.getVideoName().getFullPath());
         mediaRecorder.setOrientationHint(cameraShow.orientationChange());
         mediaRecorder.setMaxDuration(600000); // set maximum duration
         mediaRecorder.setMaxFileSize(50000000); // set maximum file size

@@ -22,6 +22,7 @@ public class MediaScreenActivity extends FragmentActivity {
 
     private String mediaOpened;
     private CameraDisplayFragment activeFragment;
+    private String bunchName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,7 @@ public class MediaScreenActivity extends FragmentActivity {
 
         Bundle extrasData = getIntent().getExtras();
         mediaOpened = extrasData.getString(MEDIA_NAME_EXTRAS_NAME);
+        bunchName = extrasData.getString(CameraDisplayFragment.BUNCH_NAME_EXTRAS_NAME);
 
         setFragment();
     }
@@ -65,6 +67,7 @@ public class MediaScreenActivity extends FragmentActivity {
                 break;
         }
 
+        activeFragment.setArguments(composeBunchBundle());
         fragmentTransaction.replace(R.id.mediaFragmentPlatform, activeFragment);
         fragmentTransaction.commit();
     }
@@ -82,8 +85,15 @@ public class MediaScreenActivity extends FragmentActivity {
                 break;
         }
 
+        activeFragment.setArguments(composeBunchBundle());
         fragmentTransaction.replace(R.id.mediaFragmentPlatform, activeFragment);
         fragmentTransaction.commit();
+    }
+
+    private Bundle composeBunchBundle(){
+        Bundle fragmentData = new Bundle();
+        fragmentData.putString(CameraDisplayFragment.BUNCH_NAME_EXTRAS_NAME, bunchName);
+        return fragmentData;
     }
 
     @Override

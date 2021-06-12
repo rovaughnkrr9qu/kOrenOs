@@ -97,7 +97,7 @@ public class Frame extends EntityInterface{
         if(IDBunch!=null)content.put("IDBunch", IDBunch);
         if(Date!=null)content.put("Date", Date);
         if(Format!=null)content.put("Format", Format);
-        if(Pitch!=null)content.put("Angle", Pitch);
+        if(Pitch!=null)content.put("Pitch", Pitch);
         if(Orientation!=null)content.put("Orientation", Orientation);
 
         return content;

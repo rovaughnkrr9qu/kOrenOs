@@ -2,13 +2,14 @@ package sk.uniza.fri.korenos.horizoncamera.ServiceModules;
 
 import android.media.MediaRecorder;
 import android.os.Environment;
-import android.text.style.TtsSpan;
 import android.view.Surface;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import sk.uniza.fri.korenos.horizoncamera.SupportClass.MediaLocationData;
 
 /**
  * Created by Markos on 10. 11. 2016.
@@ -26,6 +27,8 @@ public class MediaLocationsAndSettingsTimeService {
     private static int videoFrameRate = 30;
     private static boolean soundOn = true;
     private static boolean saveAdditionalData = true;
+
+    private static String bunchName;
 
     public static void setBaseLocation(String location){
         baseLocation = location;
@@ -82,6 +85,10 @@ public class MediaLocationsAndSettingsTimeService {
         return soundOn;
     }
 
+    public static void setBunchName(String selectedBunchName){
+        bunchName = selectedBunchName;
+    }
+
     public static int orientationCalculatior(int momentalRotation){
         switch(momentalRotation){
             case Surface.ROTATION_0:
@@ -105,29 +112,38 @@ public class MediaLocationsAndSettingsTimeService {
         }
     }
 
-    public static String getVideoName(){
-        counterVideo = findNextName(baseLocation, videoType, videoBaseName, counterVideo);
-        StringBuilder temp = new StringBuilder(baseLocation);
-        temp.append(videoBaseName);
-        temp.append(counterVideo);
-        temp.append(videoType);
-        return temp.toString();
+    public static MediaLocationData getVideoName(){
+        String locationName = baseLocation;
+        if(bunchName != null){
+            locationName = locationName+"/"+bunchName;
+        }
+
+        counterVideo = findNextName(locationName, videoType, videoBaseName, counterVideo);
+        if(counterVideo == -1){
+            return null;
+        }
+        MediaLocationData data = new MediaLocationData(baseLocation, bunchName, videoBaseName, counterVideo, videoType);
+
+        return data;
     }
 
-    public static String getPhotoName(){
-        counterPhoto = findNextName(baseLocation, photoType, photoBaseName, counterPhoto);
+    public static MediaLocationData getPhotoName(){
+        String locationName = baseLocation;
+        if(bunchName != null){
+            locationName = locationName+"/"+bunchName;
+        }
+
+        counterPhoto = findNextName(locationName, photoType, photoBaseName, counterPhoto);
         if(counterPhoto == -1){
             return null;
         }
-        StringBuilder temp = new StringBuilder(baseLocation);
-        temp.append(photoBaseName);
-        temp.append(counterPhoto);
-        temp.append(photoType);
-        return temp.toString();
+        MediaLocationData data = new MediaLocationData(baseLocation, bunchName, photoBaseName, counterPhoto, photoType);
+
+        return data;
     }
 
     private static int findNextName(String baseLocation, String type, String baseName, int count){
-        String basePath = baseLocation+baseName;
+        String basePath = baseLocation+"/"+baseName;
 
         StringBuilder fileID = new StringBuilder();
         fileID.append(count);

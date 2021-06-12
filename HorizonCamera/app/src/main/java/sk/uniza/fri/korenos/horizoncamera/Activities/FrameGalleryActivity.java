@@ -1,7 +1,9 @@
 package sk.uniza.fri.korenos.horizoncamera.Activities;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import java.io.File;
@@ -54,18 +56,19 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
 
         databaseData.moveToFirst();
         for (int i = 0; i < databaseData.getCount(); i++) {
-            frameNumber = Integer.parseInt(databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[0])));     //frame number
-            frameName = databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[1]));                 //frame name
+            frameNumber = Integer.parseInt(databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[0])));     //frame number
+            frameName = databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[1]));                 //frame name
 
-            imagePath = composeImagePath(getBunchPath(selectedBunchName), frameName, frameNumber);
+            imagePath = composeImagePath(database.getBunchPath(selectedBunchName), frameName, frameNumber);
             imagePicture = getSavedImage(imagePath);
 
             listItem = new GalleryListDataPackage(imagePicture, frameName+frameNumber+".jpeg",
                     MediaLocationsAndSettingsTimeService.transformToTime(
-                            Long.parseLong(databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[3])))),     //frame date
-                    databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[4])),     //frame format
-                    databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[6])),     //frame azimuth
-                    databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[5]))      //frame pitch
+                            Long.parseLong(databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[3])))),     //frame date
+                    formatCodeDecoder(databaseData.getInt(databaseData.getColumnIndex(Frame.COLUMN_NAMES[4]))),     //frame format
+                    databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[6])),     //frame azimuth
+                    databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[5])),      //frame pitch
+                    frameName, frameNumber
             );
 
             inputListData.add(listItem);
@@ -77,12 +80,27 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
 
     @Override
     protected void clickedItemAction(GalleryRecyclerAdapter.ViewHolder listItem) {
-        super.clickedItemAction(listItem);
+        DatabaseService database = DatabaseService.getDbInstance(this);
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.parse("file://" +database.getPicturePath(selectedBunchName,
+                listItem.getItemData().getSpecialPropertyString(), listItem.getItemData().getSpecialPropertyInt()));
+        intent.setDataAndType(uri,"image/*");
+        startActivity(intent);
     }
 
     @Override
     protected boolean deleteSelected() {
-        return super.deleteSelected();
+        for(int i = 0; i < selectedListItems.size(); i++){
+            int bunchID = DatabaseService.getDbInstance(this).findBunchID(selectedBunchName);
+            if(bunchID == -1){
+                return false;
+            }
+            deletePictureFromDatabase(bunchID, selectedListItems.get(i).getItemData().getSpecialPropertyString(),
+                    selectedListItems.get(i).getItemData().getSpecialPropertyInt());
+            selectedListItems.get(i).deleteAnimation();
+        }
+        return true;
     }
 
     @Override
@@ -102,5 +120,12 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
         file.delete();
 
         return database.deleteRow(new Frame(frameNumber, frameName, bunchID, null, null, null, null));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        galleryTypeSpecifications();
     }
 }

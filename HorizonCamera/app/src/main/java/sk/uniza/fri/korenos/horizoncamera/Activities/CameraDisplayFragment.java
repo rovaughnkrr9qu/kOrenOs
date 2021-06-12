@@ -1,6 +1,5 @@
 package sk.uniza.fri.korenos.horizoncamera.Activities;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -17,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import sk.uniza.fri.korenos.horizoncamera.R;
-import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationDemandingActivityInterface;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.CameraView;
 
 /**
@@ -25,6 +24,8 @@ import sk.uniza.fri.korenos.horizoncamera.SupportClass.CameraView;
  */
 
 public class CameraDisplayFragment extends Fragment {
+
+    public static final String BUNCH_NAME_EXTRAS_NAME = "bunchName";
 
     protected Camera camera = null;
     protected CameraView cameraShow;
@@ -34,6 +35,8 @@ public class CameraDisplayFragment extends Fragment {
     private int zoomLevel = 0;
     private int zoomStep = 5;
 
+    protected String bunchName;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.media_fragment_layout, container, false);
@@ -42,6 +45,11 @@ public class CameraDisplayFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Bundle extrasData = getArguments();
+        if(extrasData != null){
+            bunchName = extrasData.getString(BUNCH_NAME_EXTRAS_NAME);
+        }
 
         if(!checkCameraDevice(getActivity().getApplicationContext())){
             Toast.makeText(getActivity().getApplicationContext(), "There is not camera device.", Toast.LENGTH_SHORT).show();

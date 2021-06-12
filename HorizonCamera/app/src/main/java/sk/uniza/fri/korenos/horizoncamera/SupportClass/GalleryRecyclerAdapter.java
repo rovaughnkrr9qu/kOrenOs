@@ -153,10 +153,9 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
 
         holder.getItemImage().setImageBitmap(listData.get(position).getItemImage());
         holder.getItemMainName().setText(listData.get(position).getItemMainName());
+        holder.getItemFirstProperty().setText("Date: "+listData.get(position).getItemFirstProperty());
 
         if(bunchListAdapter) {
-            holder.getItemFirstProperty().setText("Date: "+listData.get(position).getItemFirstProperty());
-
             if(listData.get(position).getItemSecondProperty() == null || listData.get(position).getItemThirdProperty() == null){
                 holder.getItemSecondProperty().setText("GPS: unknown");
             }else{
@@ -165,7 +164,13 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
             }
             holder.getItemThirdProperty().setText("Pictures in bunch: "+listData.get(position).getItemForthProperty());
         }else{
-
+            holder.getItemSecondProperty().setText("Source: "+listData.get(position).getItemSecondProperty());
+            if(listData.get(position).getItemThirdProperty() == null || listData.get(position).getItemForthProperty()==null){
+                holder.getItemThirdProperty().setText("Azimuth:  Pitch: ");
+            }else{
+                holder.getItemThirdProperty().setText("Azimuth: "+listData.get(position).getItemThirdProperty()
+                        +"°  Pitch: "+listData.get(position).getItemForthProperty()+"°");
+            }
         }
     }
 

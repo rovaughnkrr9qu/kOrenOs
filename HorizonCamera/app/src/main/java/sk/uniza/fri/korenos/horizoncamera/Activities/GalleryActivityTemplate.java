@@ -35,6 +35,8 @@ public class GalleryActivityTemplate extends AppCompatActivity implements Galler
     public static final String NEW_BUNCH_CHOOSE_GALLERY_CODE = "newBunchChooseGallery";
 
     public static final String GALLERY_TYPE_EXTRAS_NAME = "galleryType";
+    public static final String NEW_BUNCH_RESULT_EXTRAS_NAME = "galleryType";
+    public static final int SUCCESS_RESULT_CODE = 200;
 
     protected String actualType;
     private int optionPanelHeight = 150;
@@ -126,22 +128,6 @@ public class GalleryActivityTemplate extends AppCompatActivity implements Galler
         recyclerView.setAdapter(recyclerAdapter);
     }
 
-    protected String getBunchPath(String bunchName){
-        DatabaseService database = DatabaseService.getDbInstance(this);
-
-        Cursor selectedBunch = database.selectRow(new Bunch(null, bunchName, null, null, null, null, null));
-        selectedBunch.moveToFirst();
-        return selectedBunch.getString(selectedBunch.getColumnIndex(Bunch.COLUMN_NAMES[3]));
-    }
-
-    protected String getBunchPath(int bunchID){
-        DatabaseService database = DatabaseService.getDbInstance(this);
-
-        Cursor selectedBunch = database.selectRow(new Bunch(bunchID, null, null, null, null, null, null));
-        selectedBunch.moveToFirst();
-        return selectedBunch.getString(selectedBunch.getColumnIndex(Bunch.COLUMN_NAMES[3]));
-    }
-
     protected String composeImagePath(String bunchPath, String frameName, int frameNumber){
         StringBuilder imagePathBuilder = new StringBuilder(bunchPath);
         imagePathBuilder.append("/");
@@ -164,6 +150,14 @@ public class GalleryActivityTemplate extends AppCompatActivity implements Galler
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         return BitmapFactory.decodeFile(path, options);
+    }
+
+    protected String formatCodeDecoder(int formatCode){
+        switch (formatCode){
+            case 0: return "Picture";
+            case 1: return "Video";
+            default: return "Unknown";
+        }
     }
 
     public void galleryCancelAction(View view) {

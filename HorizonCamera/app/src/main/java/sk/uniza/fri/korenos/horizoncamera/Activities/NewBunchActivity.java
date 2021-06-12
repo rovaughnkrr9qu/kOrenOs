@@ -1,6 +1,7 @@
 package sk.uniza.fri.korenos.horizoncamera.Activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationService;
 public class NewBunchActivity extends AppCompatActivity implements OrientationDemandingActivityInterface{
 
     private int successRequestCode = 200;
+    private int newActivityRequestCode = 23;
     private String bunchPath;
     private OrientationService orientationService;
 
@@ -36,7 +38,9 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
     }
 
     public void findExistingBunchAction(View view) {
-
+        Intent intent = new Intent(this,BunchGalleryActivity.class);
+        intent.putExtra(GalleryActivityTemplate.GALLERY_TYPE_EXTRAS_NAME, GalleryActivityTemplate.NEW_BUNCH_CHOOSE_GALLERY_CODE);
+        startActivityForResult(intent, newActivityRequestCode);
     }
 
     public void createBunchAction(View view) {
@@ -48,9 +52,8 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
         bunchPath = MediaLocationsAndSettingsTimeService.getBaseLocation()+"/"+folderName;
 
         checkOrCreate(MediaLocationsAndSettingsTimeService.getBaseLocation());
-        if(checkOrCreate(bunchPath)){
-            addToDatabase();
-        }
+        checkOrCreate(bunchPath);
+        addToDatabase();
     }
 
     private void disablingFunctions(){
@@ -89,18 +92,53 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
         String folderName = ((EditText) findViewById(R.id.newBunchActivityNewBunchNameText)).getText().toString();
         Bunch newBunch;
 
-        if(saveInformation){
-            Toast.makeText(this, R.string.newBunchActivityGPSFoungToastText, Toast.LENGTH_SHORT).show();
+        if(checkNameInDatabase(folderName)) {
+            if (saveInformation) {
+                Toast.makeText(this, R.string.newBunchActivityGPSFoungToastText, Toast.LENGTH_SHORT).show();
 
-            newBunch = new Bunch(null, folderName, MediaLocationsAndSettingsTimeService.getCurrentTime(),
-                    bunchPath, 1, GPSlocation.getLatitude(), GPSlocation.getLongitude());
-        }else{
-            newBunch = new Bunch(null, folderName, MediaLocationsAndSettingsTimeService.getCurrentTime(),
-                    bunchPath, 0, null, null);
+                newBunch = new Bunch(null, folderName, MediaLocationsAndSettingsTimeService.getCurrentTime(),
+                        bunchPath, 1, GPSlocation.getLatitude(), GPSlocation.getLongitude());
+            } else {
+                newBunch = new Bunch(null, folderName, MediaLocationsAndSettingsTimeService.getCurrentTime(),
+                        bunchPath, 0, null, null);
+            }
+
+            if (DatabaseService.getDbInstance(this).insertRow(newBunch) == -1) {
+                Toast.makeText(this, getResources().getString(R.string.newBunchActivityBunchNotCreatedToastText), Toast.LENGTH_SHORT).show();
+            }
         }
 
-        if(DatabaseService.getDbInstance(this).insertRow(newBunch) == -1){
-            Toast.makeText(this, getResources().getString(R.string.newBunchActivityBunchNotCreatedToastText), Toast.LENGTH_SHORT).show();
+        openMediaActivity(folderName);
+    }
+
+    private boolean checkNameInDatabase(String bunchName) {
+        return DatabaseService.getDbInstance(this).selectRow(new Bunch(null, bunchName, null, null, null, null, null)).getCount() == 0;
+    }
+
+    private void openMediaActivity(String bunchName) {
+        CheckBox mediaCHeckBox = (CheckBox) findViewById(R.id.newBunchActivityPictureMediaCheckBox);
+
+        if(mediaCHeckBox.isChecked()){      //picture media
+            Intent intent = new Intent(this,MediaScreenActivity.class);
+            intent.putExtra(MediaScreenActivity.MEDIA_NAME_EXTRAS_NAME, MediaScreenActivity.PHOTO_MEDIA_CODE);
+            intent.putExtra(CameraDisplayFragment.BUNCH_NAME_EXTRAS_NAME, bunchName);
+            startActivity(intent);
+        }else{                              //video media
+            Intent intent = new Intent(this,MediaScreenActivity.class);
+            intent.putExtra(MediaScreenActivity.MEDIA_NAME_EXTRAS_NAME, MediaScreenActivity.VIDEO_MEDIA_CODE);
+            intent.putExtra(CameraDisplayFragment.BUNCH_NAME_EXTRAS_NAME, bunchName);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == BunchGalleryActivity.SUCCESS_RESULT_CODE){
+            Bundle extras = data.getExtras();
+            String bunchName = extras.getString(BunchGalleryActivity.NEW_BUNCH_RESULT_EXTRAS_NAME);
+
+            EditText bunchNameTextBox = (EditText) findViewById(R.id.newBunchActivityNewBunchNameText);
+            bunchNameTextBox.setText(bunchName);
         }
     }
 

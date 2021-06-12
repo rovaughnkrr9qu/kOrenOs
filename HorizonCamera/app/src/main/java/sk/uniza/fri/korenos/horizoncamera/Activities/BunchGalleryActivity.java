@@ -3,7 +3,6 @@ package sk.uniza.fri.korenos.horizoncamera.Activities;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -96,51 +95,46 @@ public class BunchGalleryActivity extends GalleryActivityTemplate {
                 startActivity(intent);
                 break;
             case NEW_BUNCH_CHOOSE_GALLERY_CODE:
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(NEW_BUNCH_RESULT_EXTRAS_NAME, listItem.getItemData().getItemMainName());
+                setResult(SUCCESS_RESULT_CODE, resultIntent);
+                finish();
                 break;
         }
+    }
+
+    @Override
+    protected boolean sendSelected() {
+        return super.sendSelected();
     }
 
     @Override
     protected boolean deleteSelected() {
         String nameTemp;
 
-        if(actualType.compareTo(BUNCH_GALLERY_CODE)==0){
-            for(int i = 0; i < selectedListItems.size(); i++){
-                nameTemp = selectedListItems.get(i).getItemData().getItemMainName();
-                int bunchID = findBunchID(nameTemp);
-                if(bunchID == -1){
-                    return false;
-                }
-                deletePicturesOfBrunch(bunchID);
-                deleteBunch(nameTemp);
-                selectedListItems.get(i).deleteAnimation();
+        for(int i = 0; i < selectedListItems.size(); i++){
+            nameTemp = selectedListItems.get(i).getItemData().getItemMainName();
+            int bunchID = DatabaseService.getDbInstance(this).findBunchID(nameTemp);
+            if(bunchID == -1){
+                return false;
             }
+            deletePicturesOfBrunch(bunchID);
+            deleteBunch(nameTemp);
+            selectedListItems.get(i).deleteAnimation();
         }
         return true;
     }
 
     private int getCountOfPicturesInBunch(String bunchName){
         DatabaseService database = DatabaseService.getDbInstance(this);
-        Cursor selectedBunch = database.selectRow(new Frame(null, null, findBunchID(bunchName), null, null, null, null));
+        Cursor selectedBunch = database.selectRow(new Frame(null, null, database.findBunchID(bunchName), null, null, null, null));
         return selectedBunch.getCount();
-    }
-
-    private int findBunchID(String bunchName){
-        DatabaseService database = DatabaseService.getDbInstance(this);
-        Cursor selectedBunch = database.selectRow(new Bunch(null, bunchName, null, null, null, null, null));
-
-        if(selectedBunch.getCount() == 0){
-            return -1;
-        }
-        selectedBunch.moveToFirst();
-
-        return Integer.parseInt(selectedBunch.getString(selectedBunch.getColumnIndex(Bunch.COLUMN_NAMES[0])));
     }
 
     private int deleteBunch(String bunchName){
         DatabaseService database = DatabaseService.getDbInstance(this);
 
-        File file = new File(getBunchPath(bunchName));
+        File file = new File(database.getBunchPath(bunchName));
         file.delete();
 
         return database.deleteRow(new Bunch(null, bunchName, null, null, null, null, null));
@@ -149,7 +143,7 @@ public class BunchGalleryActivity extends GalleryActivityTemplate {
     private int deletePicturesOfBrunch(Integer bunchID){
         DatabaseService database = DatabaseService.getDbInstance(this);
 
-        String bunchPath = getBunchPath(bunchID);
+        String bunchPath = database.getBunchPath(bunchID);
 
         File bunch = new File(bunchPath);
         if (bunch.isDirectory())
@@ -162,5 +156,12 @@ public class BunchGalleryActivity extends GalleryActivityTemplate {
         }
 
         return database.deleteRow(new Frame(null, null, bunchID, null, null, null, null));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        galleryTypeSpecifications();
     }
 }
