@@ -8,10 +8,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Bunch;
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Frame;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
 
 /**
  * Created by Markos on 25. 11. 2016.
@@ -41,7 +41,7 @@ public class MediaDataSaver {
         }
 
         DatabaseService database = DatabaseService.getDbInstance(context);
-        database.insertRow(new Frame(locationData.getFrameNumber(),locationData.getBaseName(), database.findBunchID(bunchName),
+        database.insertRow(new Frame(locationData.getFrameNumber(),locationData.getBaseName(), DataOperationServices.findBunchID(bunchName, database),
                 orientationData.getTimeStamp(), 0, orientationData.getPitch(), orientationData.getAzimuth()));
 
         Cursor cursor = database.selectRow(new Frame(null, null, null, null, null, null, null));

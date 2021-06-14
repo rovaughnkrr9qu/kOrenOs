@@ -1,8 +1,5 @@
 package sk.uniza.fri.korenos.horizoncamera.Activities;
 
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,10 +15,9 @@ import android.widget.Button;
 import java.util.ArrayList;
 import java.util.List;
 
-import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Bunch;
+import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.EntityInterface;
 import sk.uniza.fri.korenos.horizoncamera.R;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
-import sk.uniza.fri.korenos.horizoncamera.SupportClass.GalleryListDataPackage;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.GalleryRecyclerAdapter;
 
 /**
@@ -40,7 +36,7 @@ public class GalleryActivityTemplate extends AppCompatActivity implements Galler
 
     protected String actualType;
     private int optionPanelHeight = 150;
-    private int openOptionPanelDuration = 500;
+    private int openOptionPanelDuration = 200;
 
     protected MenuStatus menuStatus = MenuStatus.menuClosed;
     protected ArrayList<GalleryRecyclerAdapter.ViewHolder> selectedListItems;
@@ -110,54 +106,13 @@ public class GalleryActivityTemplate extends AppCompatActivity implements Galler
         recyclerView.startAnimation(animation);
     }
 
-    protected void showData(List<GalleryListDataPackage> dataList){
-        boolean bunchData;
-        switch(actualType){
-            case INSIDE_BUNCH_GALLERY_CODE:
-                bunchData = false;
-                break;
-            default:
-                bunchData = true;
-        }
-
+    protected void showData(List<EntityInterface> dataList){
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.galleryMainListPane);
         RecyclerView.LayoutManager recyclerManager =  new LinearLayoutManager(this);
 
         recyclerView.setLayoutManager(recyclerManager);
-        GalleryRecyclerAdapter recyclerAdapter = new GalleryRecyclerAdapter(dataList, this, bunchData);
+        GalleryRecyclerAdapter recyclerAdapter = new GalleryRecyclerAdapter(dataList, this, DatabaseService.getDbInstance(this));
         recyclerView.setAdapter(recyclerAdapter);
-    }
-
-    protected String composeImagePath(String bunchPath, String frameName, int frameNumber){
-        StringBuilder imagePathBuilder = new StringBuilder(bunchPath);
-        imagePathBuilder.append("/");
-        imagePathBuilder.append(frameName);
-        imagePathBuilder.append(frameNumber);
-        imagePathBuilder.append(".jpeg");
-
-        return imagePathBuilder.toString();
-    }
-
-    protected String composeImagePath(String bunchPath, String frameName){
-        StringBuilder imagePathBuilder = new StringBuilder(bunchPath);
-        imagePathBuilder.append("/");
-        imagePathBuilder.append(frameName);
-
-        return imagePathBuilder.toString();
-    }
-
-    protected Bitmap getSavedImage(String path){
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        return BitmapFactory.decodeFile(path, options);
-    }
-
-    protected String formatCodeDecoder(int formatCode){
-        switch (formatCode){
-            case 0: return "Picture";
-            case 1: return "Video";
-            default: return "Unknown";
-        }
     }
 
     public void galleryCancelAction(View view) {
@@ -166,7 +121,7 @@ public class GalleryActivityTemplate extends AppCompatActivity implements Galler
         for (int i = 0; i < selectedListItems.size(); i++){
             selectedListItems.get(i).unlight();
         }
-        selectedListItems.clear();
+        clearSelectedItemList();
         menuStatus = MenuStatus.menuClosed;
     }
 
@@ -181,8 +136,17 @@ public class GalleryActivityTemplate extends AppCompatActivity implements Galler
                 buttonsVisible(false);
                 break;
         }
-
+        clearSelectedItemList();
         menuStatus = MenuStatus.menuClosed;
+    }
+
+    private void clearSelectedItemList(){
+        for (GalleryRecyclerAdapter.ViewHolder item : selectedListItems){
+            if(item != null){
+                item.unlight();
+            }
+        }
+        selectedListItems.clear();
     }
 
     @Override

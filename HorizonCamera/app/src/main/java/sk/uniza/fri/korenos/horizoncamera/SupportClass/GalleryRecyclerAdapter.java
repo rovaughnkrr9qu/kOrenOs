@@ -2,6 +2,7 @@ package sk.uniza.fri.korenos.horizoncamera.SupportClass;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,7 +14,13 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Bunch;
+import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.EntityInterface;
+import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Frame;
 import sk.uniza.fri.korenos.horizoncamera.R;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 
 /**
  * Created by Markos on 24. 11. 2016.
@@ -23,16 +30,16 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private GalleryListDataPackage itemData;
+        private EntityInterface itemData;
         private GalleryItemClickedInterface listeningActivity;
 
         private ImageView itemImage;
         private TextView itemMainName;
-        private TextView itemFirstProperty;
-        private TextView itemSecondProperty;
-        private TextView itemThirdProperty;
+        private TextView itemDate;
+        private TextView itemGPSandSource;
+        private TextView itemPictureNumberAndOrientation;
 
-        private int highlightTime = 500;
+        private int highlightTime = 200;
         private boolean highlighted = false;
         ViewHolder selfInstance;
 
@@ -40,9 +47,9 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
             super(v);
             itemImage = (ImageView) v.findViewById(R.id.itemImage);
             itemMainName = (TextView) v.findViewById(R.id.itemMainName);
-            itemFirstProperty = (TextView) v.findViewById(R.id.itemFirstProperty);
-            itemSecondProperty = (TextView) v.findViewById(R.id.itemSecondProperty);
-            itemThirdProperty = (TextView) v.findViewById(R.id.itemThirdProperty);
+            itemDate = (TextView) v.findViewById(R.id.itemDate);
+            itemGPSandSource = (TextView) v.findViewById(R.id.itemSecondProperty);
+            itemPictureNumberAndOrientation = (TextView) v.findViewById(R.id.itemThirdProperty);
 
             listeningActivity = activity;
 
@@ -73,23 +80,23 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
             return itemMainName;
         }
 
-        public TextView getItemFirstProperty() {
-            return itemFirstProperty;
+        public TextView getItemDate() {
+            return itemDate;
         }
 
-        public TextView getItemSecondProperty() {
-            return itemSecondProperty;
+        public TextView getItemGPSandSource() {
+            return itemGPSandSource;
         }
 
-        public TextView getItemThirdProperty() {
-            return itemThirdProperty;
+        public TextView getItemPictureNumberAndOrientation() {
+            return itemPictureNumberAndOrientation;
         }
 
-        public GalleryListDataPackage getItemData() {
+        public EntityInterface getItemData() {
             return itemData;
         }
 
-        public void setItemData(GalleryListDataPackage itemData){
+        public void setItemData(EntityInterface itemData){
             this.itemData = itemData;
         }
 
@@ -130,13 +137,13 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
     }
 
     private GalleryItemClickedInterface activity;
-    private List<GalleryListDataPackage> listData;
-    private boolean bunchListAdapter;
+    private List<EntityInterface> listData;
+    private DatabaseService database;
 
-    public GalleryRecyclerAdapter(List<GalleryListDataPackage> dataForList, GalleryItemClickedInterface demandingActivity, boolean bunchList) {
+    public GalleryRecyclerAdapter(List<EntityInterface> dataForList, GalleryItemClickedInterface demandingActivity, DatabaseService openedDatabase) {
         activity = demandingActivity;
         listData = dataForList;
-        bunchListAdapter = bunchList;
+        database = openedDatabase;
     }
 
     @Override
@@ -149,29 +156,58 @@ public class GalleryRecyclerAdapter extends RecyclerView.Adapter<GalleryRecycler
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.setItemData(listData.get(position));
-
-        holder.getItemImage().setImageBitmap(listData.get(position).getItemImage());
-        holder.getItemMainName().setText(listData.get(position).getItemMainName());
-        holder.getItemFirstProperty().setText("Date: "+listData.get(position).getItemFirstProperty());
-
-        if(bunchListAdapter) {
-            if(listData.get(position).getItemSecondProperty() == null || listData.get(position).getItemThirdProperty() == null){
-                holder.getItemSecondProperty().setText("GPS: unknown");
-            }else{
-                holder.getItemSecondProperty().setText("GPS: "+listData.get(position).getItemSecondProperty()
-                        + ", " + listData.get(position).getItemThirdProperty());
-            }
-            holder.getItemThirdProperty().setText("Pictures in bunch: "+listData.get(position).getItemForthProperty());
-        }else{
-            holder.getItemSecondProperty().setText("Source: "+listData.get(position).getItemSecondProperty());
-            if(listData.get(position).getItemThirdProperty() == null || listData.get(position).getItemForthProperty()==null){
-                holder.getItemThirdProperty().setText("Azimuth:  Pitch: ");
-            }else{
-                holder.getItemThirdProperty().setText("Azimuth: "+listData.get(position).getItemThirdProperty()
-                        +"°  Pitch: "+listData.get(position).getItemForthProperty()+"°");
-            }
+        if (listData.get(position).getClass() == Bunch.class) {
+            bindBunchData(holder, position);
+        } else {
+            bindFrameData(holder, position);
         }
+
+        holder.setItemData(listData.get(position));
+    }
+
+    private void bindFrameData(ViewHolder holder, int position){
+        Frame bindedFrame = (Frame) listData.get(position);
+
+        String bunchName = DataOperationServices.findBunchName(bindedFrame.getIDBunch(), database);
+
+        holder.getItemImage().setImageBitmap(getImage(bunchName, bindedFrame.getFrameName(), bindedFrame.getFrameNumber()));
+        holder.getItemMainName().setText(bindedFrame.getFullFrameName());
+        holder.getItemDate().setText(MediaLocationsAndSettingsTimeService.transformToTime(bindedFrame.getDate()));
+        holder.getItemGPSandSource().setText("Source: "+ DataOperationServices.formatCodeDecoder(bindedFrame.getFormat()));
+        if(bindedFrame.getPitch()==null || bindedFrame.getOrientation()==null) {
+            holder.getItemPictureNumberAndOrientation().setText("Azimuth:  Pitch: ");
+        }else{
+            holder.getItemPictureNumberAndOrientation().setText("Azimuth: "+bindedFrame.getOrientation()
+                    +"°  Pitch: "+bindedFrame.getPitch()+"°");
+        }
+    }
+
+    private void bindBunchData(ViewHolder holder, int position){
+        Bunch bindedBunch = (Bunch) listData.get(position);
+
+        Bitmap imagePicture = null;
+
+        String pictureName = DataOperationServices.getFirstImageOfFolder(bindedBunch.getPath());
+        if(pictureName != null){
+            imagePicture = DataOperationServices.getSavedImage(bindedBunch.getPath()+"/"+pictureName);
+        }
+
+        holder.getItemImage().setImageBitmap(imagePicture);
+        holder.getItemMainName().setText(bindedBunch.getBunchName());
+        holder.getItemDate().setText(MediaLocationsAndSettingsTimeService.transformToTime(bindedBunch.getDate()));
+        if(bindedBunch.getLatitude() == null || bindedBunch.getLongitude() == null) {
+            holder.getItemGPSandSource().setText("GPS: unknown");
+        }else{
+            holder.getItemGPSandSource().setText("GPS: "+bindedBunch.getLatitude()
+                    + ", " + bindedBunch.getLongitude());
+        }
+        holder.getItemPictureNumberAndOrientation().setText("Pictures in bunch: "
+                +DataOperationServices.getCountOfPicturesInBunch(bindedBunch.getBunchName(), database));
+    }
+
+    private Bitmap getImage(String bunchNnme, String frameName, int frameNumber){
+        String imagePath = DataOperationServices.composeImagePath(DataOperationServices.getBunchPath(bunchNnme, database), frameName, frameNumber);
+        return DataOperationServices.getSavedImage(imagePath);
     }
 
     @Override

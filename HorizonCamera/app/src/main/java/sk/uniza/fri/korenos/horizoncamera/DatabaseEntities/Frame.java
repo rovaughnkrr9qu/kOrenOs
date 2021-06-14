@@ -51,6 +51,19 @@ public class Frame extends EntityInterface{
         composeAll.add(Orientation);
     }
 
+    public Object getDataOfColumn(int columnID){
+        switch (columnID){
+            case 0: return FrameNumber;
+            case 1: return FrameName;
+            case 2: return IDBunch;
+            case 3: return Date;
+            case 4: return Format;
+            case 5: return Pitch;
+            case 6: return Orientation;
+            default:return null;
+        }
+    }
+
     public Integer getFrameNumber() {
         return FrameNumber;
     }
@@ -77,6 +90,10 @@ public class Frame extends EntityInterface{
 
     public Long getDate() {
         return Date;
+    }
+
+    public String getFullFrameName(){
+        return FrameName+FrameNumber+".jpeg";
     }
 
     @Override

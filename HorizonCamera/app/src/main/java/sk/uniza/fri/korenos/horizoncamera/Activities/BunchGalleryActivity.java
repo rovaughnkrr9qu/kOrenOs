@@ -2,17 +2,16 @@ package sk.uniza.fri.korenos.horizoncamera.Activities;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Bunch;
+import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.EntityInterface;
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Frame;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
-import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
-import sk.uniza.fri.korenos.horizoncamera.SupportClass.GalleryListDataPackage;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.GalleryRecyclerAdapter;
 
 /**
@@ -26,61 +25,41 @@ public class BunchGalleryActivity extends GalleryActivityTemplate {
         showData(getBunchDatabaseData());
     }
 
-    private List<GalleryListDataPackage> getBunchDatabaseData(){
+    private List<EntityInterface> getBunchDatabaseData(){
         Bunch selectDefinitionBunch = new Bunch(null, null, null, null, null, null, null);
 
         DatabaseService database = DatabaseService.getDbInstance(this);
         Cursor databaseData = database.selectRow(selectDefinitionBunch);
 
-        ArrayList<GalleryListDataPackage> inputListData = new ArrayList<>();
-        GalleryListDataPackage listItem;
+        ArrayList<EntityInterface> inputListData = new ArrayList<>();
+        Bunch listItem;
 
-        String pictureName;
+        int bunchID;
         String bunchName;
-        String imagePath;
-        Bitmap imagePicture;
+        Long bunchDate;
+        String bunchPath;
+        int saveAddData;
+        Double bunchLatitude;
+        Double bunchLongitude;
 
         databaseData.moveToFirst();
         for (int i = 0; i < databaseData.getCount(); i++) {
-            imagePicture = null;
-            imagePath = databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[3])); //bunch image path
-            pictureName = getFirstImageOfFolder(imagePath);
-            if(pictureName != null){
-                imagePicture = getSavedImage(imagePath+"/"+pictureName);
-            }
-            bunchName = databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[1]));
 
-            listItem = new GalleryListDataPackage(imagePicture, bunchName,
-                    MediaLocationsAndSettingsTimeService.transformToTime(
-                            Long.parseLong(databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[2])))),     //bunch date
-                    databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[5])),     //bunch longitude
-                    databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[6])),     //bunch latitude
-                    getCountOfPicturesInBunch(bunchName)+""
-            );
+            bunchID = databaseData.getInt(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[0]));
+            bunchName = databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[1]));
+            bunchDate = databaseData.getLong(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[2]));
+            bunchPath = databaseData.getString(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[3]));
+            saveAddData = databaseData.getInt(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[4]));
+            bunchLatitude = databaseData.getDouble(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[5]));
+            bunchLongitude = databaseData.getDouble(databaseData.getColumnIndex(Bunch.COLUMN_NAMES[6]));
+
+            listItem = new Bunch(bunchID, bunchName, bunchDate, bunchPath, saveAddData, bunchLatitude, bunchLongitude);
 
             inputListData.add(listItem);
             databaseData.moveToNext();
         }
 
         return inputListData;
-    }
-
-    private String getFirstImageOfFolder(String path){
-        File directory = new File(path);
-        if(directory == null){
-            return null;
-        }
-        File[] contents = directory.listFiles();
-        if (contents == null || contents.length == 0) {
-            return null;
-        }else {
-            for(File file : contents){
-                if(file.getName().endsWith(".jpeg")){
-                    return file.getName();
-                }
-            }
-        }
-        return null;
     }
 
     @Override
@@ -91,12 +70,12 @@ public class BunchGalleryActivity extends GalleryActivityTemplate {
             case BUNCH_GALLERY_CODE:
                 Intent intent = new Intent(this,FrameGalleryActivity.class);
                 intent.putExtra(GalleryActivityTemplate.GALLERY_TYPE_EXTRAS_NAME, GalleryActivityTemplate.INSIDE_BUNCH_GALLERY_CODE);
-                intent.putExtra(FrameGalleryActivity.SELECTED_BUNCH_EXTRAS_NAME, listItem.getItemData().getItemMainName());
+                intent.putExtra(FrameGalleryActivity.SELECTED_BUNCH_EXTRAS_NAME, ((Bunch)listItem.getItemData()).getBunchName());
                 startActivity(intent);
                 break;
             case NEW_BUNCH_CHOOSE_GALLERY_CODE:
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra(NEW_BUNCH_RESULT_EXTRAS_NAME, listItem.getItemData().getItemMainName());
+                resultIntent.putExtra(NEW_BUNCH_RESULT_EXTRAS_NAME, ((Bunch)listItem.getItemData()).getBunchName());
                 setResult(SUCCESS_RESULT_CODE, resultIntent);
                 finish();
                 break;
@@ -113,8 +92,8 @@ public class BunchGalleryActivity extends GalleryActivityTemplate {
         String nameTemp;
 
         for(int i = 0; i < selectedListItems.size(); i++){
-            nameTemp = selectedListItems.get(i).getItemData().getItemMainName();
-            int bunchID = DatabaseService.getDbInstance(this).findBunchID(nameTemp);
+            nameTemp = ((Bunch)selectedListItems.get(i).getItemData()).getBunchName();
+            int bunchID = DataOperationServices.findBunchID(nameTemp, DatabaseService.getDbInstance(this));
             if(bunchID == -1){
                 return false;
             }
@@ -125,16 +104,10 @@ public class BunchGalleryActivity extends GalleryActivityTemplate {
         return true;
     }
 
-    private int getCountOfPicturesInBunch(String bunchName){
-        DatabaseService database = DatabaseService.getDbInstance(this);
-        Cursor selectedBunch = database.selectRow(new Frame(null, null, database.findBunchID(bunchName), null, null, null, null));
-        return selectedBunch.getCount();
-    }
-
     private int deleteBunch(String bunchName){
         DatabaseService database = DatabaseService.getDbInstance(this);
 
-        File file = new File(database.getBunchPath(bunchName));
+        File file = new File(DataOperationServices.getBunchPath(bunchName, database));
         file.delete();
 
         return database.deleteRow(new Bunch(null, bunchName, null, null, null, null, null));
@@ -143,7 +116,7 @@ public class BunchGalleryActivity extends GalleryActivityTemplate {
     private int deletePicturesOfBrunch(Integer bunchID){
         DatabaseService database = DatabaseService.getDbInstance(this);
 
-        String bunchPath = database.getBunchPath(bunchID);
+        String bunchPath = DataOperationServices.getBunchPath(bunchID, database);
 
         File bunch = new File(bunchPath);
         if (bunch.isDirectory())
@@ -151,7 +124,7 @@ public class BunchGalleryActivity extends GalleryActivityTemplate {
             String[] children = bunch.list();
             for (int i = 0; i < children.length; i++)
             {
-                new File(composeImagePath(bunchPath, children[i])).delete();
+                new File(DataOperationServices.composeImagePath(bunchPath, children[i])).delete();
             }
         }
 

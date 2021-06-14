@@ -40,7 +40,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/itemFirstProperty"
+                android:id="@+id/itemDate"
                 android:layout_below="@+id/itemMainName"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="20dp"
@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/itemSecondProperty"
-                android:layout_below="@+id/itemFirstProperty"
+                android:layout_below="@+id/itemDate"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="5dp"
                 android:layout_toEndOf="@+id/space" />

@@ -11,10 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Bunch;
+import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.EntityInterface;
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Frame;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.ConnectionService;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
-import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
-import sk.uniza.fri.korenos.horizoncamera.SupportClass.GalleryListDataPackage;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.GalleryRecyclerAdapter;
 
 /**
@@ -40,36 +41,35 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
         showData(getFrameDatabaseData());
     }
 
-    private List<GalleryListDataPackage> getFrameDatabaseData(){
+    private List<EntityInterface> getFrameDatabaseData(){
         Frame selectDefinitionFrame = new Frame(null, null, null, null, null, null, null);
 
         DatabaseService database = DatabaseService.getDbInstance(this);
         Cursor databaseData = database.selectRow(selectDefinitionFrame);
 
-        ArrayList<GalleryListDataPackage> inputListData = new ArrayList<>();
-        GalleryListDataPackage listItem;
+        ArrayList<EntityInterface> inputListData = new ArrayList<>();
+        Frame listItem;
 
         int frameNumber;
         String frameName;
-        String imagePath;
-        Bitmap imagePicture;
+        int frameBunchID;
+        long frameDate;
+        int frameFormat;
+        Double framePitch;
+        Double frameAzimuth;
 
         databaseData.moveToFirst();
         for (int i = 0; i < databaseData.getCount(); i++) {
-            frameNumber = Integer.parseInt(databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[0])));     //frame number
-            frameName = databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[1]));                 //frame name
 
-            imagePath = composeImagePath(database.getBunchPath(selectedBunchName), frameName, frameNumber);
-            imagePicture = getSavedImage(imagePath);
+            frameNumber = databaseData.getInt(databaseData.getColumnIndex(Frame.COLUMN_NAMES[0]));
+            frameName = databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[1]));
+            frameBunchID = databaseData.getInt(databaseData.getColumnIndex(Frame.COLUMN_NAMES[2]));
+            frameDate = databaseData.getLong(databaseData.getColumnIndex(Frame.COLUMN_NAMES[3]));
+            frameFormat = databaseData.getInt(databaseData.getColumnIndex(Frame.COLUMN_NAMES[4]));
+            framePitch = databaseData.getDouble(databaseData.getColumnIndex(Frame.COLUMN_NAMES[5]));
+            frameAzimuth = databaseData.getDouble(databaseData.getColumnIndex(Frame.COLUMN_NAMES[6]));
 
-            listItem = new GalleryListDataPackage(imagePicture, frameName+frameNumber+".jpeg",
-                    MediaLocationsAndSettingsTimeService.transformToTime(
-                            Long.parseLong(databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[3])))),     //frame date
-                    formatCodeDecoder(databaseData.getInt(databaseData.getColumnIndex(Frame.COLUMN_NAMES[4]))),     //frame format
-                    databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[6])),     //frame azimuth
-                    databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[5])),      //frame pitch
-                    frameName, frameNumber
-            );
+            listItem = new Frame(frameNumber, frameName, frameBunchID, frameDate, frameFormat, framePitch, frameAzimuth);
 
             inputListData.add(listItem);
             databaseData.moveToNext();
@@ -83,8 +83,8 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
         DatabaseService database = DatabaseService.getDbInstance(this);
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
-        Uri uri = Uri.parse("file://" +database.getPicturePath(selectedBunchName,
-                listItem.getItemData().getSpecialPropertyString(), listItem.getItemData().getSpecialPropertyInt()));
+        Uri uri = Uri.parse("file://" + DataOperationServices.getPicturePath(selectedBunchName,
+                ((Frame)listItem.getItemData()).getFrameName(), ((Frame)listItem.getItemData()).getFrameNumber(), database));
         intent.setDataAndType(uri,"image/*");
         startActivity(intent);
     }
@@ -92,12 +92,12 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
     @Override
     protected boolean deleteSelected() {
         for(int i = 0; i < selectedListItems.size(); i++){
-            int bunchID = DatabaseService.getDbInstance(this).findBunchID(selectedBunchName);
+            int bunchID = DataOperationServices.findBunchID(selectedBunchName, DatabaseService.getDbInstance(this));
             if(bunchID == -1){
                 return false;
             }
-            deletePictureFromDatabase(bunchID, selectedListItems.get(i).getItemData().getSpecialPropertyString(),
-                    selectedListItems.get(i).getItemData().getSpecialPropertyInt());
+            deletePictureFromDatabase(bunchID, ((Frame)selectedListItems.get(i).getItemData()).getFrameName(),
+                    ((Frame)selectedListItems.get(i).getItemData()).getFrameNumber());
             selectedListItems.get(i).deleteAnimation();
         }
         return true;
@@ -105,7 +105,20 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
 
     @Override
     protected boolean sendSelected() {
-        return super.sendSelected();
+        int actualBunchID = DataOperationServices.findBunchID(selectedBunchName, DatabaseService.getDbInstance(this));
+
+        ArrayList<Frame> framesToSend = new ArrayList<>();
+        ArrayList<String> pathsToFrames = new ArrayList<>();
+
+        for(GalleryRecyclerAdapter.ViewHolder viewedData : selectedListItems){
+            framesToSend.add((Frame)viewedData.getItemData());
+            pathsToFrames.add(DataOperationServices.composeImagePath(
+                    DataOperationServices.getBunchPath(actualBunchID, DatabaseService.getDbInstance(this)),
+                    ((Frame)viewedData.getItemData()).getFrameName(),((Frame)viewedData.getItemData()).getFrameNumber()));
+        }
+
+        ConnectionService.sendData("http://posttestserver.com/post.php",ConnectionService.convertPhotoData(framesToSend, pathsToFrames));     //http://posttestserver.com/post.php
+        return false;
     }
 
     private int deletePictureFromDatabase(Integer bunchID, String frameName, int frameNumber){
@@ -113,7 +126,7 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
 
         Cursor selectedBunch = database.selectRow(new Bunch(bunchID, null, null, null, null, null, null));
         selectedBunch.moveToFirst();
-        String imagePath = composeImagePath(selectedBunch.getString(selectedBunch.getColumnIndex(Bunch.COLUMN_NAMES[3])),
+        String imagePath = DataOperationServices.composeImagePath(selectedBunch.getString(selectedBunch.getColumnIndex(Bunch.COLUMN_NAMES[3])),
                 frameName, frameNumber);
 
         File file = new File(imagePath);

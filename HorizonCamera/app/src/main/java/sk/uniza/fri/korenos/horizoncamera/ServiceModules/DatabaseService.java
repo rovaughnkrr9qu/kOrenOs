@@ -52,41 +52,6 @@ public class DatabaseService extends SQLiteOpenHelper{
         return getWritableDatabase().delete(entity.getTableName(), entity.getSelectionString(), null);
     }
 
-    public String getBunchPath(String bunchName){
-        Cursor selectedBunch = DATABASE_INSTANCE.selectRow(new Bunch(null, bunchName, null, null, null, null, null));
-        selectedBunch.moveToFirst();
-        return selectedBunch.getString(selectedBunch.getColumnIndex(Bunch.COLUMN_NAMES[3]));
-    }
-
-    public String getBunchPath(int bunchID){
-        Cursor selectedBunch = DATABASE_INSTANCE.selectRow(new Bunch(bunchID, null, null, null, null, null, null));
-        selectedBunch.moveToFirst();
-        return selectedBunch.getString(selectedBunch.getColumnIndex(Bunch.COLUMN_NAMES[3]));
-    }
-
-    public String getPicturePath(String bunchName, String pictureName, int pictureNumber){
-        String bunchPath = getBunchPath(bunchName);
-
-        StringBuilder picturePath = new StringBuilder(bunchPath);
-        picturePath.append("/");
-        picturePath.append(pictureName);
-        picturePath.append(pictureNumber);
-        picturePath.append(".jpeg");
-
-        return picturePath.toString();
-    }
-
-    public int findBunchID(String bunchName){
-        Cursor selectedBunch = DATABASE_INSTANCE.selectRow(new Bunch(null, bunchName, null, null, null, null, null));
-
-        if(selectedBunch.getCount() == 0){
-            return -1;
-        }
-        selectedBunch.moveToFirst();
-
-        return Integer.parseInt(selectedBunch.getString(selectedBunch.getColumnIndex(Bunch.COLUMN_NAMES[0])));
-    }
-
     /*private static String createInitString( entityClass){
         StringBuilder bunchTableCreator = new StringBuilder("create table ");
         bunchTableCreator.append(entityClass.NAME);
