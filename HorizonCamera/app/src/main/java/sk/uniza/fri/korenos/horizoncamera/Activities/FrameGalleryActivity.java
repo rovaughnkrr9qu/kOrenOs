@@ -7,6 +7,9 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +19,7 @@ import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Frame;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.ConnectionService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.GalleryRecyclerAdapter;
 
 /**
@@ -117,7 +121,7 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
                     ((Frame)viewedData.getItemData()).getFrameName(),((Frame)viewedData.getItemData()).getFrameNumber()));
         }
 
-        ConnectionService.sendData("http://posttestserver.com/post.php",ConnectionService.convertPhotoData(framesToSend, pathsToFrames));     //http://posttestserver.com/post.php
+        ConnectionService.sendData(MediaLocationsAndSettingsTimeService.getServerULDAddress(),ConnectionService.convertPhotoData(framesToSend, pathsToFrames), getApplicationContext());     //http://posttestserver.com/post.php
         return false;
     }
 

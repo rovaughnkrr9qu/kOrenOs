@@ -17,6 +17,8 @@ import sk.uniza.fri.korenos.horizoncamera.SupportClass.MediaLocationData;
 
 public class MediaLocationsAndSettingsTimeService {
 
+    private static String serverURLAddress = "http://httpbin.org/post";
+
     private static String baseLocation = Environment.getExternalStorageDirectory() + "/HorizonCamera";
     private static String photoType = ".jpeg";
     private static String videoType = ".mp4";
@@ -67,6 +69,14 @@ public class MediaLocationsAndSettingsTimeService {
 
     public static boolean getSoundOn(){
         return soundOn;
+    }
+
+    public static void setServerULDAddress(String serverAddress){
+        serverURLAddress = serverAddress;
+    }
+
+    public static String getServerULDAddress(){
+        return serverURLAddress;
     }
 
     public static long getCurrentTime(){

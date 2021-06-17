@@ -1,20 +1,21 @@
 package sk.uniza.fri.korenos.horizoncamera.ServiceModules;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Base64;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
-import java.net.URLEncoder;
+import java.net.URLConnection;
 import java.util.List;
 
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Frame;
@@ -27,75 +28,84 @@ public class ConnectionService {
 
     private static String IMAGE_TAG_JSON_NAME = "imageData";
 
-    private static AsyncTask<String, Void, Boolean> sendTask = new AsyncTask<String, Void, Boolean>() {
+    private Context applicationContext = null;
+
+    private AsyncTask<String, Void, Boolean> sendTask = new AsyncTask<String, Void, Boolean>() {
         @Override
         protected Boolean doInBackground(String... params) {
+            BufferedReader reader = null;
+            String text = null;
+
             try {
-                DataOutputStream printout;
                 URL url = new URL(params[0]);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(20000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestMethod("POST");
+                URLConnection conn = url.openConnection();
                 conn.setDoOutput(true);
-                //conn.setDoInput(true);
-                conn.setRequestProperty("Content-Type","application/json");
-                conn.connect();
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write(params[1]);
+                wr.flush();
 
-                printout = new DataOutputStream(conn.getOutputStream());
-                printout.writeBytes(URLEncoder.encode(params[1],"UTF-8"));
-                printout.flush();
-                printout.close();
+                reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = null;
 
-                /*DataInputStream input = new DataInputStream(conn.getInputStream());
-                InputStream in = new BufferedInputStream(conn.getInputStream());
-                input.(in);*/
-
-            }catch (MalformedURLException e){
-                System.out.println("chyba 1");
-                e.printStackTrace();
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                text = sb.toString();
+                System.out.println(text);
+            } catch (Exception ex) {
+                ex.printStackTrace();
                 return false;
+            } finally {
+                try {
+                    reader.close();
+                } catch (Exception ex) {
+                    return false;
+                }
             }
-            catch (IOException e){
-                System.out.println("chyba 2");
-                e.printStackTrace();
-                return false;
-            }
-
             return true;
         }
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
-            System.out.println(aBoolean.booleanValue()+" TUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU 4");
+            if(aBoolean){
+                Toast.makeText(applicationContext, "Data sent successfully.", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(applicationContext, "Error- data not sent.", Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
-    public static boolean sendData(String urlString, JSONObject JSONdata){
-        sendTask.execute(urlString, "message");                                 //naprav to tak, ako to ma byt
-        return false;
+    public ConnectionService(String urlString, JSONObject JSONdata, Context context) {
+        applicationContext = context;
+
+        sendTask.execute(urlString, JSONdata.toString());
     }
 
-    public static JSONObject convertPhotoData(List<Frame> listOfFrame, List<String> frameFullPath){
-        if(listOfFrame == null || frameFullPath == null){
+    public static void sendData(String urlString, JSONObject JSONdata, Context context) {
+        new ConnectionService(urlString, JSONdata, context);
+    }
+
+    public static JSONObject convertPhotoData(List<Frame> listOfFrame, List<String> frameFullPath) {
+        if (listOfFrame == null || frameFullPath == null) {
             return null;
         }
-        if(listOfFrame.size() != frameFullPath.size()){
+        if (listOfFrame.size() != frameFullPath.size()) {
             return null;
         }
         JSONArray dataArray = null;
 
         dataArray = new JSONArray();
-        if(dataArray == null){
+        if (dataArray == null) {
             return null;
         }
 
         JSONObject frameJSONData = null;
         try {
-            for(int i = 0; i < listOfFrame.size(); i++){
+            for (int i = 0; i < listOfFrame.size(); i++) {
                 frameJSONData = new JSONObject();
 
-                for(int j = 0; j < Frame.COLUMN_NAMES.length; j++){
+                for (int j = 0; j < Frame.COLUMN_NAMES.length; j++) {
                     frameJSONData.accumulate(Frame.COLUMN_NAMES[j], listOfFrame.get(i).getDataOfColumn(j));
                 }
                 frameJSONData.accumulate(IMAGE_TAG_JSON_NAME, serialiseImageToString(frameFullPath.get(i)));
@@ -104,13 +114,13 @@ public class ConnectionService {
 
             frameJSONData = new JSONObject();
             frameJSONData.put("horizonCameraData", dataArray);
-        }catch (JSONException e){
+        } catch (JSONException e) {
         }
 
         return frameJSONData;
     }
 
-    private static String serialiseImageToString(String imagePath){
+    private static String serialiseImageToString(String imagePath) {
         Bitmap savedImage = DataOperationServices.getSavedImage(imagePath);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -119,7 +129,7 @@ public class ConnectionService {
         return Base64.encodeToString(byteImageArray, Base64.DEFAULT);
     }
 
-    private static byte[] deserialiseImageFromString(String serialisedImage){
-        return  Base64.decode(serialisedImage.getBytes(), Base64.DEFAULT);
+    private static byte[] deserialiseImageFromString(String serialisedImage) {
+        return Base64.decode(serialisedImage.getBytes(), Base64.DEFAULT);
     }
 }
