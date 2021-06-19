@@ -19,7 +19,10 @@ import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
 
 public class MediaDataSaver {
 
-    public static void savePhoto(byte[] photoData, String bunchName, OrientationDataPackage orientationData, Context context){
+    public static void savePhoto(byte[] photoData, String bunchName, OrientationDataPackage orientationData, DatabaseService database){
+        DataOperationServices.checkOrCreateDefaultBunch(MediaLocationsAndSettingsTimeService.getBaseLocation(),
+                bunchName, database);
+
         MediaLocationsAndSettingsTimeService.setBunchName(bunchName);
 
         MediaLocationData locationData = MediaLocationsAndSettingsTimeService.getPhotoName();
@@ -40,9 +43,13 @@ public class MediaDataSaver {
             return;
         }
 
-        DatabaseService database = DatabaseService.getDbInstance(context);
-        database.insertRow(new Frame(locationData.getFrameNumber(),locationData.getBaseName(), DataOperationServices.findBunchID(bunchName, database),
-                orientationData.getTimeStamp(), 0, orientationData.getPitch(), orientationData.getAzimuth()));
+        if(orientationData == null){
+            database.insertRow(new Frame(locationData.getFrameNumber(),locationData.getBaseName(), DataOperationServices.findBunchID(bunchName, database),
+                    MediaLocationsAndSettingsTimeService.getCurrentTime(), 0, null, null));
+        }else{
+            database.insertRow(new Frame(locationData.getFrameNumber(),locationData.getBaseName(), DataOperationServices.findBunchID(bunchName, database),
+                    orientationData.getTimeStamp(), 0, orientationData.getPitch(), orientationData.getAzimuth()));
+        }
 
         Cursor cursor = database.selectRow(new Frame(null, null, null, null, null, null, null));
         cursor.moveToFirst();

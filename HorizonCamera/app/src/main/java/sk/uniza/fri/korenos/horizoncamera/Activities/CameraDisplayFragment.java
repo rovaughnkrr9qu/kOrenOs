@@ -1,29 +1,42 @@
 package sk.uniza.fri.korenos.horizoncamera.Activities;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Bunch;
 import sk.uniza.fri.korenos.horizoncamera.R;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationDemandingActivityInterface;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationService;
+import sk.uniza.fri.korenos.horizoncamera.SupportClass.AutomaticModeInterface;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.CameraView;
+import sk.uniza.fri.korenos.horizoncamera.SupportClass.MediaDataSaver;
+import sk.uniza.fri.korenos.horizoncamera.SupportClass.OrientationDataPackage;
 
 /**
  * Created by Markos on 10. 11. 2016.
  */
 
-public class CameraDisplayFragment extends Fragment {
+public class CameraDisplayFragment extends Fragment implements OrientationDemandingActivityInterface {
 
     public static final String BUNCH_NAME_EXTRAS_NAME = "bunchName";
 
@@ -32,10 +45,14 @@ public class CameraDisplayFragment extends Fragment {
     private FrameLayout displayArea;
     private CameraSides cameraActiveSide;
 
+    private int successCode = 200;
+
     private int zoomLevel = 0;
     private int zoomStep = 5;
 
     protected String bunchName;
+
+    protected OrientationService orientationService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,8 +64,13 @@ public class CameraDisplayFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Bundle extrasData = getArguments();
-        if(extrasData != null){
-            bunchName = extrasData.getString(BUNCH_NAME_EXTRAS_NAME);
+        if(extrasData != null) {
+            String bunch = extrasData.getString(BUNCH_NAME_EXTRAS_NAME);
+            if (bunch != null) {
+                bunchName = bunch;
+            } else {
+                bunchName = MediaLocationsAndSettingsTimeService.getDefaultBunch();
+            }
         }
 
         if(!checkCameraDevice(getActivity().getApplicationContext())){
@@ -57,21 +79,25 @@ public class CameraDisplayFragment extends Fragment {
             return;
         }
 
-        displayArea = (FrameLayout) getView().findViewById(R.id.mediaFragmentDisplaySurface);
-
         cameraActiveSide = CameraSides.back;
-        startPreview(findCameraCode(cameraActiveSide));
-
+        startDisplayAndCamera();
         setMediaImages();
 
-        ImageView lightButton = (ImageView) getActivity().findViewById(R.id.mediaFragmentLightButton);
-        lightButton.setOnClickListener(new View.OnClickListener() {
+        Button zoomIn = (Button) getView().findViewById(R.id.mediaFragmentZoomIn);
+        zoomIn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                turnOnLight();
+            public void onClick(View v) {
+                zoomIn(v);
             }
         });
-        setLightButton(lightButton);
+
+        Button zoomOut = (Button) getView().findViewById(R.id.mediaFragmentZoomOut);
+        zoomOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                zoomOut(v);
+            }
+        });
 
         ImageView cameraCangeButton = (ImageView) getActivity().findViewById(R.id.mediaFragmentChangeCameraButton);
         if(setCameraChangeOption(cameraCangeButton)){
@@ -86,25 +112,24 @@ public class CameraDisplayFragment extends Fragment {
         mediaFunctions();
     }
 
+    private void startDisplayAndCamera(){
+        displayArea = (FrameLayout) getView().findViewById(R.id.mediaFragmentDisplaySurface);
+        startPreview(findCameraCode(cameraActiveSide));
+    }
+
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         cameraClose();
         cameraShow = null;
         displayArea.removeAllViews();
+        stopOrientationService(true);
     }
 
-    private void turnOnLight(){
-        ImageView button = (ImageView) getActivity().findViewById(R.id.mediaFragmentLightButton);
-        Camera.Parameters param = camera.getParameters();
-        if(param.getFlashMode().compareTo(Camera.Parameters.FLASH_MODE_OFF)==0){
-            param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-            button.setImageDrawable(getResources().getDrawable(R.drawable.ic_flash_on_black_24dp));
-        }else{
-            param.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-            button.setImageDrawable(getResources().getDrawable(R.drawable.ic_flash_off_black_24dp));
-        }
-        camera.setParameters(param);
+    @Override
+    public void onResume() {
+        super.onResume();
+        setVisibilityOfOrientationBar();
     }
 
     private void changeCameraSide(){
@@ -120,15 +145,6 @@ public class CameraDisplayFragment extends Fragment {
                 break;
         }
         startPreview(findCameraCode(cameraActiveSide));
-    }
-
-    private void setLightButton(ImageView button){
-        Camera.Parameters param = camera.getParameters();
-        if(param.getFlashMode().compareTo(Camera.Parameters.FLASH_MODE_OFF)==0){
-            button.setImageDrawable(getResources().getDrawable(R.drawable.ic_flash_off_black_24dp));
-        }else{
-            button.setImageDrawable(getResources().getDrawable(R.drawable.ic_flash_on_black_24dp));
-        }
     }
 
     private boolean setCameraChangeOption(ImageView button){
@@ -193,11 +209,61 @@ public class CameraDisplayFragment extends Fragment {
         displayArea.addView(cameraShow);
     }
 
+    private void setVisibilityOfOrientationBar(){
+        RelativeLayout orientationBar = (RelativeLayout) getView().findViewById(R.id.mediaFragmentOrientationBar);
+        if(MediaLocationsAndSettingsTimeService.getShowAdditionalDataOnScreen()){
+            orientationBar.setVisibility(View.VISIBLE);
+            startOrientationService();
+        }else{
+            orientationBar.setVisibility(View.INVISIBLE);
+            stopOrientationService(false);
+        }
+    }
+
+    protected void takePicture(){
+        camera.takePicture(null, null, new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] bytes, Camera camera) {
+                OrientationDataPackage orientationData = null;
+                if(MediaLocationsAndSettingsTimeService.getSaveAdditionalData()) {
+                    orientationData = orientationService.getActualOrientation();
+                    orientationService.stopOrientationSensors();
+                }
+
+                MediaDataSaver.savePhoto(bytes, bunchName, orientationData,
+                        DatabaseService.getDbInstance(getActivity().getApplicationContext()));
+                restartPreview();
+            }
+        });
+    }
+
+    protected void startOrientationService(){
+        if(orientationService == null) {
+            orientationService = new OrientationService(this, (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE));
+        }
+        orientationService.startOrientationSensors();
+    }
+
+    protected void stopOrientationService(boolean highPriority){
+        if(highPriority || !MediaLocationsAndSettingsTimeService.getShowAdditionalDataOnScreen()) {
+            if (orientationService != null) {
+                orientationService.stopOrientationSensors();
+                orientationService.stopGPS();
+            }
+        }
+    }
+
     protected void restartPreview(){
         startPreview(findCameraCode(cameraActiveSide));
     }
 
     protected void setMediaImages() {
+        Button zoomIn = (Button) getView().findViewById(R.id.mediaFragmentZoomIn);
+        Button zoomOut = (Button) getView().findViewById(R.id.mediaFragmentZoomOut);
+
+        zoomIn.getBackground().setAlpha(100);
+        zoomOut.getBackground().setAlpha(100);
+
         Toolbar upToolbar = (Toolbar) getView().findViewById(R.id.mediaFragmentUpToolbar);
         upToolbar.getBackground().setAlpha(100);
 
@@ -212,12 +278,29 @@ public class CameraDisplayFragment extends Fragment {
 
         tempImage = (ImageView) getView().findViewById(R.id.mediaFragmentGalleryButton);
         tempImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_portrait_black_24dp));
+
+        resetSecondaryButtonListener();
+
+        setVisibilityOfOrientationBar();
+    }
+
+    protected void resetSecondaryButtonListener(){
+        ImageView secondaryButton = (ImageView) getView().findViewById(R.id.mediaFragmentGalleryButton);
+        secondaryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FrameGalleryActivity.class);
+                intent.putExtra(GalleryActivityTemplate.GALLERY_TYPE_EXTRAS_NAME, GalleryActivityTemplate.INSIDE_BUNCH_GALLERY_CODE);
+                intent.putExtra(FrameGalleryActivity.SELECTED_BUNCH_EXTRAS_NAME, bunchName);
+                startActivity(intent);
+            }
+        });
     }
 
     protected void mediaFunctions(){
     }
 	
-	public void zoomIn(View view){
+	protected void zoomIn(View view){
         Camera.Parameters param = camera.getParameters();
         int maxZoom;
         if(param.isZoomSupported()){
@@ -233,7 +316,7 @@ public class CameraDisplayFragment extends Fragment {
         camera.setParameters(param);
     }
 
-    public void zoomOut(View view){
+    protected void zoomOut(View view){
         Camera.Parameters param = camera.getParameters();
         if(param.isZoomSupported()){
             if(zoomLevel-zoomStep <= 0){
@@ -245,7 +328,35 @@ public class CameraDisplayFragment extends Fragment {
         }
         camera.setParameters(param);
     }
-	
+
+    @Override
+    public int getSuccessRequestCode() {
+        return successCode;
+    }
+
+    @Override
+    public Activity getDemandingActivity() {
+        return getActivity();
+    }
+
+    @Override
+    public void getActualOrientationData(double azimuth, double pitch) {
+        if(MediaLocationsAndSettingsTimeService.getShowAdditionalDataOnScreen()){
+            TextView azimuthTextBox = (TextView) getView().findViewById(R.id.mediaFragmentOrientationAzimuthTextBar);
+            TextView pitchTextBox = (TextView) getView().findViewById(R.id.mediaFragmentOrientationAzimuthTextBar);
+
+            azimuthTextBox.setText(String.format("%.2d°", azimuth));
+            pitchTextBox.setText(String.format("%.2d°", pitch));
+        }
+    }
+
+    @Override
+    public void orientationDataReady() {
+    }
+
+    @Override
+    public void GPSDataReady() {
+    }
 
     private enum CameraSides {
         back, front

@@ -37,12 +37,13 @@ public class Statistics {
     }
 
     private void checkBounds(double value){
+        System.out.println(value);
         if(!dataContainer.isEmpty()){
             int temp = iterator-1;
             if(temp < 0) {
                 temp = maxItemsCount -1;
             }
-            if(dataContainer.get(temp) + value > maxChange){
+            if(Math.abs(dataContainer.get(temp) - value) > maxChange){
                 dataContainer.clear();
                 iterator = 0;
                 stackFull = false;

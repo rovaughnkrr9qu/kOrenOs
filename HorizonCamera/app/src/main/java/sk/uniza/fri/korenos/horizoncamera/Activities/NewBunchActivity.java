@@ -15,6 +15,7 @@ import java.io.File;
 
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Bunch;
 import sk.uniza.fri.korenos.horizoncamera.R;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationDemandingActivityInterface;
@@ -51,8 +52,8 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
 
         bunchPath = MediaLocationsAndSettingsTimeService.getBaseLocation()+"/"+folderName;
 
-        checkOrCreate(MediaLocationsAndSettingsTimeService.getBaseLocation());
-        checkOrCreate(bunchPath);
+        DataOperationServices.checkOrCreateFolder(MediaLocationsAndSettingsTimeService.getBaseLocation());
+        DataOperationServices.checkOrCreateFolder(bunchPath);
         addToDatabase();
     }
 
@@ -65,14 +66,6 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
 
         CheckBox pictureMediaCheckBox = (CheckBox) findViewById(R.id.newBunchActivityPictureMediaCheckBox);
         pictureMediaCheckBox.setEnabled(false);
-    }
-
-    private boolean checkOrCreate(String path){
-        File folder = new File(path);
-        if (!folder.exists()) {
-            return folder.mkdir();
-        }
-        return false;
     }
 
     private void addToDatabase() {
@@ -94,7 +87,7 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
 
         if(checkNameInDatabase(folderName)) {
             if (saveInformation) {
-                Toast.makeText(this, R.string.newBunchActivityGPSFoungToastText, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.newBunchActivityGPSFoundToastText, Toast.LENGTH_SHORT).show();
 
                 newBunch = new Bunch(null, folderName, MediaLocationsAndSettingsTimeService.getCurrentTime(),
                         bunchPath, 1, GPSlocation.getLatitude(), GPSlocation.getLongitude());
@@ -159,6 +152,10 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
     @Override
     public Activity getDemandingActivity() {
         return this;
+    }
+
+    @Override
+    public void getActualOrientationData(double azimuth, double pitch) {
     }
 
     @Override

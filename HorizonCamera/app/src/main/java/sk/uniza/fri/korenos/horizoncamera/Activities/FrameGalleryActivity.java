@@ -2,14 +2,10 @@ package sk.uniza.fri.korenos.horizoncamera.Activities;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,40 +42,7 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
     }
 
     private List<EntityInterface> getFrameDatabaseData(){
-        Frame selectDefinitionFrame = new Frame(null, null, null, null, null, null, null);
-
-        DatabaseService database = DatabaseService.getDbInstance(this);
-        Cursor databaseData = database.selectRow(selectDefinitionFrame);
-
-        ArrayList<EntityInterface> inputListData = new ArrayList<>();
-        Frame listItem;
-
-        int frameNumber;
-        String frameName;
-        int frameBunchID;
-        long frameDate;
-        int frameFormat;
-        Double framePitch;
-        Double frameAzimuth;
-
-        databaseData.moveToFirst();
-        for (int i = 0; i < databaseData.getCount(); i++) {
-
-            frameNumber = databaseData.getInt(databaseData.getColumnIndex(Frame.COLUMN_NAMES[0]));
-            frameName = databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[1]));
-            frameBunchID = databaseData.getInt(databaseData.getColumnIndex(Frame.COLUMN_NAMES[2]));
-            frameDate = databaseData.getLong(databaseData.getColumnIndex(Frame.COLUMN_NAMES[3]));
-            frameFormat = databaseData.getInt(databaseData.getColumnIndex(Frame.COLUMN_NAMES[4]));
-            framePitch = databaseData.getDouble(databaseData.getColumnIndex(Frame.COLUMN_NAMES[5]));
-            frameAzimuth = databaseData.getDouble(databaseData.getColumnIndex(Frame.COLUMN_NAMES[6]));
-
-            listItem = new Frame(frameNumber, frameName, frameBunchID, frameDate, frameFormat, framePitch, frameAzimuth);
-
-            inputListData.add(listItem);
-            databaseData.moveToNext();
-        }
-
-        return inputListData;
+        return DataOperationServices.getAllFramesOfBunch(selectedBunchName, this);
     }
 
     @Override
@@ -121,7 +84,8 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
                     ((Frame)viewedData.getItemData()).getFrameName(),((Frame)viewedData.getItemData()).getFrameNumber()));
         }
 
-        ConnectionService.sendData(MediaLocationsAndSettingsTimeService.getServerULDAddress(),ConnectionService.convertPhotoData(framesToSend, pathsToFrames), getApplicationContext());     //http://posttestserver.com/post.php
+        ConnectionService.sendData(MediaLocationsAndSettingsTimeService.getServerURLAddress(),
+                framesToSend, pathsToFrames, getApplicationContext());     //http://posttestserver.com/post.php
         return false;
     }
 

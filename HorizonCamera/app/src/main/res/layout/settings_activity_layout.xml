@@ -4,9 +4,42 @@
     android:layout_height="match_parent">
 
     <CheckBox
-        android:onClick="saveAdditionalDataChangedAction"
         android:text="@string/settingsSaveAdditionalDataCheckBoxText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/settingsSaveAdditionalDataCheckBox" />
+
+    <TextView
+        android:text="@string/settingsServerURLAddressTextLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/settingsSaveURLAddressLabel" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text=""
+        android:ems="10"
+        android:id="@+id/settingsURLAddressEditText" />
+
+    <TextView
+        android:text="@string/settingsServerURLAddressTextLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/settingsSaveDefaultBunch" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text=""
+        android:ems="10"
+        android:id="@+id/settingsDefaultBunchEditText" />
+
+    <CheckBox
+        android:text="@string/settingsServerShowDataOnScreenTextLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/settingsSaveShowAdditionalDataOnScreenCheckBox" />
 </LinearLayout>

@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.View;
 
 import sk.uniza.fri.korenos.horizoncamera.R;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -13,6 +16,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_layout);
+
+        MediaLocationsAndSettingsTimeService.loadSettings(getSharedPreferences(MediaLocationsAndSettingsTimeService.SETTINGS_SAVE_PREFERENCE_NAME, 0));
+
+        DataOperationServices.checkOrCreateDefaultBunch(MediaLocationsAndSettingsTimeService.getBaseLocation(),
+                MediaLocationsAndSettingsTimeService.getDefaultBunch(), DatabaseService.getDbInstance(this));
     }
 
     public void goToGalleryActivityAction(View view) {

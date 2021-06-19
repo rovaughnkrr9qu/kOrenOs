@@ -72,7 +72,7 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment {
             }
         });
 
-        secondaryButton.setOnTouchListener(null);
+        resetSecondaryButtonListener();
     }
 
     private void recordingStateAction(ImageView actionButton, ImageView secondaryButton){

@@ -18,7 +18,7 @@
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorToolbar"
             android:minHeight="?attr/actionBarSize"
             android:id="@+id/mediaFragmentUpToolbar">
 
@@ -61,7 +61,7 @@
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorToolbar"
             android:minHeight="?attr/actionBarSize"
             android:id="@+id/mediaFragmentDownToolbar"
             android:layout_alignParentBottom="true">
@@ -93,5 +93,75 @@
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
 
+        <Button
+            android:text="@string/mediaFragmentZoomInButtonText"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorToolbar"
+            android:layout_below="@+id/mediaFragmentUpToolbar"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/mediaFragmentZoomIn" />
+
+        <Button
+            android:text="@string/mediaFragmentZoomOutButtonText"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorToolbar"
+            android:layout_below="@+id/mediaFragmentZoomIn"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:id="@+id/mediaFragmentZoomOut" />
+
+        <RelativeLayout
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:background="@color/colorToolbar"
+            android:layout_above="@+id/mediaFragmentDownToolbar"
+            android:id="@+id/mediaFragmentOrientationBar"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentEnd="true"
+            android:visibility="invisible">
+
+            <TextView
+                android:text="@string/mediaFragmentAzimuthDataText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:id="@+id/mediaFragmentOrientationAzimuthLabel"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"/>
+
+            <TextView
+                android:text="@string/mediaFragmentPitchDataText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:id="@+id/mediaFragmentOrientationPitchLabel"
+                android:layout_below="@+id/mediaFragmentOrientationAzimuthLabel"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:id="@+id/mediaFragmentOrientationAzimuthTextBar"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/mediaFragmentOrientationPitchTextBar"
+                android:layout_below="@+id/mediaFragmentOrientationAzimuthTextBar"
+                android:layout_alignParentEnd="true"
+                android:layout_alignStart="@+id/mediaFragmentOrientationAzimuthTextBar" />
+
+        </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

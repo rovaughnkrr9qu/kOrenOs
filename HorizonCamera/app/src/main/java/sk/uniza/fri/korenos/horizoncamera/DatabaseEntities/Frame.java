@@ -22,8 +22,8 @@ public class Frame extends EntityInterface{
                     "not null references Bunch(IDBunch)",
                     "not null",
                     "not null"));
-    public final static String[] SPECIAL_CONDITION = {"primary key (FrameNumber, FrameName)"};
-    public static final String CREATE_TABLE_STRING = "create table Frame(FrameNumber integer not null,FrameName text not null,IDBunch integer not null references Bunch(IDBunch),Date integer not null, Format integer not null,Pitch real,Orientation real,primary key (FrameNumber, FrameName));";
+    public final static String[] SPECIAL_CONDITION = {"primary key (FrameNumber, FrameName, IDBunch)"};
+    public static final String CREATE_TABLE_STRING = "create table Frame(FrameNumber integer not null,FrameName text not null,IDBunch integer not null references Bunch(IDBunch),Date integer not null, Format integer not null,Pitch real,Orientation real,primary key (FrameNumber, FrameName, IDBunch));";
 
     private Integer FrameNumber;
     private String FrameName;

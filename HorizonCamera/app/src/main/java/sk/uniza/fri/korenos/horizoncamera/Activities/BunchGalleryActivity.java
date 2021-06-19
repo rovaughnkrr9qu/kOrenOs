@@ -10,8 +10,10 @@ import java.util.List;
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Bunch;
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.EntityInterface;
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Frame;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.ConnectionService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.GalleryRecyclerAdapter;
 
 /**
@@ -84,7 +86,35 @@ public class BunchGalleryActivity extends GalleryActivityTemplate {
 
     @Override
     protected boolean sendSelected() {
-        return super.sendSelected();
+        ArrayList<Frame> framesToSend = new ArrayList<>();
+        ArrayList<String> pathsToFrames = new ArrayList<>();
+
+        String bunchName;
+
+        for(GalleryRecyclerAdapter.ViewHolder viewedData : selectedListItems){
+            bunchName = ((Bunch)viewedData.getItemData()).getBunchName();
+
+            framesToSend.addAll(convertListType(DataOperationServices.getAllFramesOfBunch(bunchName, this)));
+        }
+
+        for(Frame frame : framesToSend){
+            pathsToFrames.add(DataOperationServices.composeImagePath(
+                    DataOperationServices.getBunchPath(frame.getIDBunch(), DatabaseService.getDbInstance(this)),
+                    frame.getFrameName(),(frame.getFrameNumber())));
+        }
+
+        ConnectionService.sendData(MediaLocationsAndSettingsTimeService.getServerURLAddress(),
+                framesToSend, pathsToFrames, getApplicationContext());     //http://posttestserver.com/post.php
+        return false;
+    }
+
+    private List<Frame> convertListType(List<EntityInterface> inputList){
+        ArrayList<Frame> output = new ArrayList<>();
+
+        for(EntityInterface entityItem : inputList){
+            output.add((Frame)entityItem);
+        }
+        return output;
     }
 
     @Override

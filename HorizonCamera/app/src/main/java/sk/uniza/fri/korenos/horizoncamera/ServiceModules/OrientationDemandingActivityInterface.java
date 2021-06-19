@@ -12,9 +12,10 @@ import sk.uniza.fri.korenos.horizoncamera.SupportClass.OrientationDataPackage;
  */
 
 public interface OrientationDemandingActivityInterface {
-    Context getApplicationContext();
     int getSuccessRequestCode();
     Activity getDemandingActivity();
+
+    void getActualOrientationData(double azimuth, double pitch);
 
     void orientationDataReady();
     void GPSDataReady();

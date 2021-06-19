@@ -6,6 +6,8 @@
     <string name="mainMenuGalleryButtonText">Gallery</string>
     <string name="mainMenuSettingsButtonText">Settings</string>
     <string name="settingsActivityLabel">Settings</string>
+    <string name="settingsServerURLAddressTextLabel">Server URL address</string>
+    <string name="settingsServerShowDataOnScreenTextLabel">Show additional data on screen</string>
     <string name="newBunchActivityLabel">New bunch</string>
     <string name="galleryActivityLabel">Gallery</string>
     <string name="settingsSaveAdditionalDataCheckBoxText">Save additional data</string>
@@ -27,5 +29,9 @@
     <string name="galleryBunchesTitleText">Gallery of bunches</string>
     <string name="newBunchActivityBunchNotCreatedToastText">It was not possible to create bunch with this name.</string>
     <string name="newBunchActivityGPSWaitingToastText">Wait for GPS localisation.</string>
-    <string name="newBunchActivityGPSFoungToastText">GPS location found</string>
+    <string name="newBunchActivityGPSFoundToastText">GPS location found</string>
+    <string name="mediaFragmentZoomInButtonText">+</string>
+    <string name="mediaFragmentZoomOutButtonText">-</string>
+    <string name="mediaFragmentAzimuthDataText">Azimuth: </string>
+    <string name="mediaFragmentPitchDataText">Pitch:</string>
 </resources>

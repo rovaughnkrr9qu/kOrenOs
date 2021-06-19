@@ -73,7 +73,7 @@ public class OrientationService implements SensorEventListener{
 
     private void setUpGPS(OrientationDemandingActivityInterface paDemandingActivity){
         demandingActivity = paDemandingActivity;
-        locationManager = (LocationManager) demandingActivity.getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) demandingActivity.getDemandingActivity().getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         startGPS();
     }
 
@@ -86,7 +86,7 @@ public class OrientationService implements SensorEventListener{
     }
 
     private void startGPS(){
-        if (ActivityCompat.checkSelfPermission(demandingActivity.getApplicationContext(),
+        if (ActivityCompat.checkSelfPermission(demandingActivity.getDemandingActivity().getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(demandingActivity.getDemandingActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     demandingActivity.getSuccessRequestCode());
@@ -99,7 +99,7 @@ public class OrientationService implements SensorEventListener{
 
     public void stopGPS(){
         if(locationManager != null){
-            if (ActivityCompat.checkSelfPermission(demandingActivity.getApplicationContext(),
+            if (ActivityCompat.checkSelfPermission(demandingActivity.getDemandingActivity().getApplicationContext(),
                     Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(demandingActivity.getDemandingActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         demandingActivity.getSuccessRequestCode());
@@ -120,7 +120,7 @@ public class OrientationService implements SensorEventListener{
     }
 
     private Location getLocation(){
-        if (ActivityCompat.checkSelfPermission(demandingActivity.getApplicationContext(),
+        if (ActivityCompat.checkSelfPermission(demandingActivity.getDemandingActivity().getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(demandingActivity.getDemandingActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     demandingActivity.getSuccessRequestCode());
@@ -183,16 +183,7 @@ public class OrientationService implements SensorEventListener{
             double azimuth = convertToDegrees((orientation[0] + twoPi) % twoPi);
             double pitch = convertToDegrees((orientation[1] + twoPi) % twoPi);
 
-            azimuthStatisticAverage.add(azimuth);
-            pitchStatisticAverage.add(pitch);
-
-            if(actualOrientationPackage == null){
-                actualOrientationPackage = new OrientationDataPackage(azimuthStatisticAverage.getAverage(),
-                        pitchStatisticAverage.getAverage(), MediaLocationsAndSettingsTimeService.getCurrentTime());
-            }else{
-                actualOrientationPackage.resetAll(azimuthStatisticAverage.getAverage(),
-                        pitchStatisticAverage.getAverage(), MediaLocationsAndSettingsTimeService.getCurrentTime());
-            }
+            saveData(azimuth, pitch);
 
             for(DataVisitorInterface visitor : dataVisitor){
                 visitor.getOrientationData(actualOrientationPackage);
@@ -201,6 +192,19 @@ public class OrientationService implements SensorEventListener{
             if(azimuthStatisticAverage.dataGathered() && pitchStatisticAverage.dataGathered()){
                 demandingActivity.orientationDataReady();
             }
+        }
+    }
+
+    private void saveData(double azimuth, double pitch){
+        azimuthStatisticAverage.add(azimuth);
+        pitchStatisticAverage.add(pitch);
+
+        if(actualOrientationPackage == null){
+            actualOrientationPackage = new OrientationDataPackage(azimuthStatisticAverage.getAverage(),
+                    pitchStatisticAverage.getAverage(), MediaLocationsAndSettingsTimeService.getCurrentTime());
+        }else{
+            actualOrientationPackage.resetAll(azimuthStatisticAverage.getAverage(),
+                    pitchStatisticAverage.getAverage(), MediaLocationsAndSettingsTimeService.getCurrentTime());
         }
     }
 

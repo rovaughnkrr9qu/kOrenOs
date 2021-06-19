@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.front" />
@@ -26,8 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activities.MediaScreenActivity"
-            android:parentActivityName=".Activities.MainActivity"
-            android:screenOrientation="portrait"/>
+            android:parentActivityName=".Activities.MainActivity" />
         <activity android:name=".Activities.SettingsActivity"
             android:theme="@style/AppThemeWithActionBar"
             android:label="@string/settingsActivityLabel"/>
@@ -41,7 +41,6 @@
         <activity android:name=".Activities.FrameGalleryActivity"
             android:theme="@style/AppThemeWithActionBar"
             android:label="@string/galleryActivityLabel"/>
-
     </application>
 
 </manifest>

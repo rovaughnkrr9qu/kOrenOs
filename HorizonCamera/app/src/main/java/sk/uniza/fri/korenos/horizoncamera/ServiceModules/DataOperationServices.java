@@ -1,12 +1,17 @@
 package sk.uniza.fri.korenos.horizoncamera.ServiceModules;
 
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Bunch;
+import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.EntityInterface;
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Frame;
 
 /**
@@ -127,8 +132,69 @@ public class DataOperationServices {
         return null;
     }
 
+    public static List<EntityInterface> getAllFramesOfBunch(String bunchName, Context context){
+        DatabaseService database = DatabaseService.getDbInstance(context);
+
+        Frame selectDefinitionFrame = new Frame(null, null, DataOperationServices.findBunchID(bunchName,
+                database), null, null, null, null);
+        Cursor databaseData = database.selectRow(selectDefinitionFrame);
+
+        ArrayList<EntityInterface> inputListData = new ArrayList<>();
+        Frame listItem;
+
+        int frameNumber;
+        String frameName;
+        int frameBunchID;
+        long frameDate;
+        int frameFormat;
+        Double framePitch;
+        Double frameAzimuth;
+
+        databaseData.moveToFirst();
+        for (int i = 0; i < databaseData.getCount(); i++) {
+
+            frameNumber = databaseData.getInt(databaseData.getColumnIndex(Frame.COLUMN_NAMES[0]));
+            frameName = databaseData.getString(databaseData.getColumnIndex(Frame.COLUMN_NAMES[1]));
+            frameBunchID = databaseData.getInt(databaseData.getColumnIndex(Frame.COLUMN_NAMES[2]));
+            frameDate = databaseData.getLong(databaseData.getColumnIndex(Frame.COLUMN_NAMES[3]));
+            frameFormat = databaseData.getInt(databaseData.getColumnIndex(Frame.COLUMN_NAMES[4]));
+            framePitch = databaseData.getDouble(databaseData.getColumnIndex(Frame.COLUMN_NAMES[5]));
+            frameAzimuth = databaseData.getDouble(databaseData.getColumnIndex(Frame.COLUMN_NAMES[6]));
+
+            listItem = new Frame(frameNumber, frameName, frameBunchID, frameDate, frameFormat, framePitch, frameAzimuth);
+
+            inputListData.add(listItem);
+            databaseData.moveToNext();
+        }
+
+        return inputListData;
+    }
+
     public static int getCountOfPicturesInBunch(String bunchName, DatabaseService database){
         Cursor selectedBunch = database.selectRow(new Frame(null, null, DataOperationServices.findBunchID(bunchName, database), null, null, null, null));
         return selectedBunch.getCount();
+    }
+
+    public static boolean checkOrCreateFolder(String path){
+        File folder = new File(path);
+        if (!folder.exists()) {
+            return folder.mkdir();
+        }
+        return false;
+    }
+
+    public static void checkOrCreateDefaultBunch(String baseLocation, String defaultBunchName, DatabaseService database) {
+        checkOrCreateFolder(baseLocation);
+        String defaultBunchNamePath = baseLocation+"/"+defaultBunchName;
+        checkOrCreateFolder(defaultBunchNamePath);
+
+        Bunch newBunch = new Bunch(null, defaultBunchName, MediaLocationsAndSettingsTimeService.getCurrentTime(),
+                defaultBunchNamePath, 0, null, null);
+
+        Bunch checkBunch = new Bunch(null, defaultBunchName, null, null, null, null, null);
+
+        if(database.selectRow(checkBunch).getCount() == 0) {
+            database.insertRow(newBunch);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package sk.uniza.fri.korenos.horizoncamera.ServiceModules;
 
+import android.content.SharedPreferences;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.view.Surface;
@@ -16,21 +17,61 @@ import sk.uniza.fri.korenos.horizoncamera.SupportClass.MediaLocationData;
  */
 
 public class MediaLocationsAndSettingsTimeService {
+    public static final String SETTINGS_SAVE_PREFERENCE_NAME = "horizonCameraSettingsSaves";
+
+    public static final String SETTINGS_SAVE_NAME_SERVER_URL_ADDRESS = "serverURLAddressSave";
+    public static final String SETTINGS_SHOW_ADDITIONAL_DATA_ON_SCREEN = "showAdditionalDataOnScreen";
+    public static final String SETTINGS_SAVE_NAME_ADDITIONAL_DATA_SAVE_STATUS = "additionalDataSave";
+    public static final String SETTINGS_SAVE_NAME_DEFAULT_BUNCH = "defaultBrunchSave";
 
     private static String serverURLAddress = "http://httpbin.org/post";
 
     private static String baseLocation = Environment.getExternalStorageDirectory() + "/HorizonCamera";
+
     private static String photoType = ".jpeg";
     private static String videoType = ".mp4";
     private static String photoBaseName = "photo";
     private static String videoBaseName = "video";
-    private static int counterPhoto = 0;
-    private static int counterVideo = 0;
-    private static int videoFrameRate = 30;
-    private static boolean soundOn = true;
+    private static String defaultBunch = "DefaultBunch";
+
     private static boolean saveAdditionalData = true;
+    private static boolean showAdditionalDataOnScreen = false;
 
     private static String bunchName;
+    private static SharedPreferences savePreferences;
+
+    public static void loadSettings(SharedPreferences paSavePreferences){
+        savePreferences = paSavePreferences;
+
+        String loadedServerURLAddress = savePreferences.getString(SETTINGS_SAVE_NAME_SERVER_URL_ADDRESS, null);
+        if(loadedServerURLAddress != null){
+            serverURLAddress = loadedServerURLAddress;
+        }
+
+        String loadDefaultBunch = savePreferences.getString(SETTINGS_SAVE_NAME_DEFAULT_BUNCH, null);
+        if(loadDefaultBunch != null){
+            defaultBunch = loadDefaultBunch;
+        }
+        bunchName = defaultBunch;
+
+        boolean loadAdditionalDataSave = savePreferences.getBoolean(SETTINGS_SAVE_NAME_ADDITIONAL_DATA_SAVE_STATUS, true);
+        saveAdditionalData = loadAdditionalDataSave;
+
+        boolean loadShowAdditionalData = savePreferences.getBoolean(SETTINGS_SHOW_ADDITIONAL_DATA_ON_SCREEN, false);
+        showAdditionalDataOnScreen = loadShowAdditionalData;
+    }
+
+    public static String getDefaultBunch(){
+        return defaultBunch;
+    }
+
+    public static void setDefaultBunch(String bunchName){
+        defaultBunch = bunchName;
+
+        SharedPreferences.Editor editor = savePreferences.edit();
+        editor.putString(SETTINGS_SAVE_NAME_DEFAULT_BUNCH, defaultBunch);
+        editor.commit();
+    }
 
     public static void setBaseLocation(String location){
         baseLocation = location;
@@ -48,34 +89,15 @@ public class MediaLocationsAndSettingsTimeService {
         videoBaseName = baseName;
     }
 
-    public static void setVideoType(videoTypes type){
-        switch (type){
-            case mp4: videoType = ".mp4";
-            case threeGpp: videoType = ".3gp";
-        }
-    }
-
-    public static void setVideoFrameRate(int frameRate){
-        videoFrameRate = frameRate;
-    }
-
-    public static int getVideoFrameRate(){
-        return videoFrameRate;
-    }
-
-    public static void setSoundOn(boolean soundStatus){
-        soundOn = soundStatus;
-    }
-
-    public static boolean getSoundOn(){
-        return soundOn;
-    }
-
     public static void setServerULDAddress(String serverAddress){
         serverURLAddress = serverAddress;
+
+        SharedPreferences.Editor editor = savePreferences.edit();
+        editor.putString(SETTINGS_SAVE_NAME_SERVER_URL_ADDRESS, serverURLAddress);
+        editor.commit();
     }
 
-    public static String getServerULDAddress(){
+    public static String getServerURLAddress(){
         return serverURLAddress;
     }
 
@@ -89,10 +111,26 @@ public class MediaLocationsAndSettingsTimeService {
 
     public static void setSaveAdditionalData(boolean saveAdditionalDataStatus){
         saveAdditionalData = saveAdditionalDataStatus;
+
+        SharedPreferences.Editor editor = savePreferences.edit();
+        editor.putBoolean(SETTINGS_SAVE_NAME_ADDITIONAL_DATA_SAVE_STATUS, saveAdditionalDataStatus);
+        editor.commit();
+    }
+
+    public static boolean getShowAdditionalDataOnScreen(){
+        return showAdditionalDataOnScreen;
+    }
+
+    public static void setShowAdditionalDataOnScreen(boolean showAdditionalDataOnScreenStatus){
+        showAdditionalDataOnScreen = showAdditionalDataOnScreenStatus;
+
+        SharedPreferences.Editor editor = savePreferences.edit();
+        editor.putBoolean(SETTINGS_SHOW_ADDITIONAL_DATA_ON_SCREEN, showAdditionalDataOnScreenStatus);
+        editor.commit();
     }
 
     public static boolean getSaveAdditionalData(){
-        return soundOn;
+        return saveAdditionalData;
     }
 
     public static void setBunchName(String selectedBunchName){
@@ -128,6 +166,7 @@ public class MediaLocationsAndSettingsTimeService {
             locationName = locationName+"/"+bunchName;
         }
 
+        int counterVideo = 0;
         counterVideo = findNextName(locationName, videoType, videoBaseName, counterVideo);
         if(counterVideo == -1){
             return null;
@@ -143,6 +182,7 @@ public class MediaLocationsAndSettingsTimeService {
             locationName = locationName+"/"+bunchName;
         }
 
+        int counterPhoto = 0;
         counterPhoto = findNextName(locationName, photoType, photoBaseName, counterPhoto);
         if(counterPhoto == -1){
             return null;
@@ -183,16 +223,5 @@ public class MediaLocationsAndSettingsTimeService {
     public enum videoTypes{
         mp4,
         threeGpp
-    }
-
-    public enum videoQuality {
-        QUALITY_HIGH,
-        QUALITY_720P,
-        QUALITY_480P,
-        QUALITY_1080P,
-        QUALITY_CIF,
-        QUALITY_LOW,
-        QUALITY_QCIF,
-        QUALITY_QVGA,
     }
 }
