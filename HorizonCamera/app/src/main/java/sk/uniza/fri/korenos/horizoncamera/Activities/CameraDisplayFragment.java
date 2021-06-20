@@ -99,9 +99,9 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
             }
         });
 
-        ImageView cameraCangeButton = (ImageView) getActivity().findViewById(R.id.mediaFragmentChangeCameraButton);
-        if(setCameraChangeOption(cameraCangeButton)){
-            cameraCangeButton.setOnClickListener(new View.OnClickListener() {
+        ImageView cameraChangeButton = (ImageView) getActivity().findViewById(R.id.mediaFragmentChangeCameraButton);
+        if(setCameraChangeOption(cameraChangeButton)){
+            cameraChangeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     changeCameraSide();
@@ -227,11 +227,16 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
                 OrientationDataPackage orientationData = null;
                 if(MediaLocationsAndSettingsTimeService.getSaveAdditionalData()) {
                     orientationData = orientationService.getActualOrientation();
-                    orientationService.stopOrientationSensors();
                 }
 
+                boolean backCameraSide = true;
+                if(cameraActiveSide == CameraSides.back){
+                    backCameraSide = false;
+                }
+
+                int rotationDegrees = MediaLocationsAndSettingsTimeService.orientationChange(getActivity().getApplicationContext());
                 MediaDataSaver.savePhoto(bytes, bunchName, orientationData,
-                        DatabaseService.getDbInstance(getActivity().getApplicationContext()));
+                        DatabaseService.getDbInstance(getActivity().getApplicationContext()), rotationDegrees, backCameraSide);
                 restartPreview();
             }
         });
@@ -340,18 +345,14 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
     }
 
     @Override
-    public void getActualOrientationData(double azimuth, double pitch) {
+    public void getActualOrientationData(OrientationDataPackage actualOrientationData) {
         if(MediaLocationsAndSettingsTimeService.getShowAdditionalDataOnScreen()){
             TextView azimuthTextBox = (TextView) getView().findViewById(R.id.mediaFragmentOrientationAzimuthTextBar);
-            TextView pitchTextBox = (TextView) getView().findViewById(R.id.mediaFragmentOrientationAzimuthTextBar);
+            TextView pitchTextBox = (TextView) getView().findViewById(R.id.mediaFragmentOrientationPitchTextBar);
 
-            azimuthTextBox.setText(String.format("%.2d°", azimuth));
-            pitchTextBox.setText(String.format("%.2d°", pitch));
+            azimuthTextBox.setText(String.format("%.2f°", actualOrientationData.getAzimuth()));
+            pitchTextBox.setText(String.format("%.2f°", actualOrientationData.getPitch()));
         }
-    }
-
-    @Override
-    public void orientationDataReady() {
     }
 
     @Override

@@ -15,8 +15,6 @@ public interface OrientationDemandingActivityInterface {
     int getSuccessRequestCode();
     Activity getDemandingActivity();
 
-    void getActualOrientationData(double azimuth, double pitch);
-
-    void orientationDataReady();
+    void getActualOrientationData(OrientationDataPackage actualOrientationData);
     void GPSDataReady();
 }

@@ -20,6 +20,7 @@ import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationDemandingActivityInterface;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationService;
+import sk.uniza.fri.korenos.horizoncamera.SupportClass.OrientationDataPackage;
 
 /**
  * Created by Markos on 21. 11. 2016.
@@ -155,11 +156,7 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
     }
 
     @Override
-    public void getActualOrientationData(double azimuth, double pitch) {
-    }
-
-    @Override
-    public void orientationDataReady() {
+    public void getActualOrientationData(OrientationDataPackage actualOrientationData) {
     }
 
     @Override

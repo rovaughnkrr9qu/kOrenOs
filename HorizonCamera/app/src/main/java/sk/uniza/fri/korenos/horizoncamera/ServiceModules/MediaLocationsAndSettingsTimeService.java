@@ -1,9 +1,13 @@
 package sk.uniza.fri.korenos.horizoncamera.ServiceModules;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.view.Surface;
+import android.view.WindowManager;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -137,6 +141,13 @@ public class MediaLocationsAndSettingsTimeService {
         bunchName = selectedBunchName;
     }
 
+    public static int orientationChange(Context context){
+        WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        int momentalRotation = manager.getDefaultDisplay().getRotation();
+
+        return orientationCalculatior(momentalRotation);
+    }
+
     public static int orientationCalculatior(int momentalRotation){
         switch(momentalRotation){
             case Surface.ROTATION_0:
@@ -149,6 +160,16 @@ public class MediaLocationsAndSettingsTimeService {
                 return 180;
             default: return 0;
         }
+    }
+
+    public static Bitmap rotate(Bitmap bitmap, int rotationDegree) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+
+        Matrix mtx = new Matrix();
+        mtx.setRotate(rotationDegree);
+
+        return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
     }
 
     public static int selectedVideoFormat(){

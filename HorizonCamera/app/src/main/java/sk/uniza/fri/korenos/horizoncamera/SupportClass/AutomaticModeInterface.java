@@ -7,6 +7,6 @@ import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationDemandingAct
  */
 
 public interface AutomaticModeInterface{
-    void takePicture(double degree);
+    void takePictureCall(double degree);
     void automaticModeDone();
 }

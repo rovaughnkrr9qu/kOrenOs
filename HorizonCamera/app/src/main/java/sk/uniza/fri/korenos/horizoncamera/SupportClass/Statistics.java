@@ -24,9 +24,9 @@ public class Statistics {
         checkBounds(value);
 
         if(stackFull){
-            dataContainer.set(iterator, Math.abs(value));
+            dataContainer.set(iterator, value);
         }else {
-            dataContainer.add(Math.abs(value));
+            dataContainer.add(value);
         }
         iterator++;
 
@@ -37,7 +37,6 @@ public class Statistics {
     }
 
     private void checkBounds(double value){
-        System.out.println(value);
         if(!dataContainer.isEmpty()){
             int temp = iterator-1;
             if(temp < 0) {

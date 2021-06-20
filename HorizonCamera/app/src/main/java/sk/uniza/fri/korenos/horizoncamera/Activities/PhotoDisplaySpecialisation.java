@@ -84,7 +84,8 @@ public class PhotoDisplaySpecialisation extends CameraDisplayFragment{
     }
 
     @Override
-    public void orientationDataReady() {
+    public void getActualOrientationData(OrientationDataPackage actualOrientationData) {
+        super.getActualOrientationData(actualOrientationData);
         if(photoSequence) {
             photoSequence = false;
             takePicture();

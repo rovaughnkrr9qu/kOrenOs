@@ -17,6 +17,7 @@ public class PanoramaMode implements DataVisitorInterface{
     private double initAzimuthDegree;
     private double actualAzimuthDegree;
     private double normalisedDegreeBase;
+    private double successRate;
     private double maxChange;
     private double lastValidData = 0;
     private double dataThreshold;
@@ -28,12 +29,14 @@ public class PanoramaMode implements DataVisitorInterface{
     private boolean panoramaModeWorking = false;
 
     public PanoramaMode(AutomaticModeInterface automatisedObject, int pictureDegreeGap, OrientationService orientationService,
-                        double maxMoveChange, double validDataThreshold){
+                        double maxMoveChange, double validDataThreshold, double successPassRate){
         automObject = automatisedObject;
         degreeGap = pictureDegreeGap;
         dataThreshold = validDataThreshold;
 
         maxChange = maxMoveChange;
+
+        successRate = successPassRate;
 
         this.orientationService = orientationService;
 
@@ -55,7 +58,7 @@ public class PanoramaMode implements DataVisitorInterface{
         normalisedDegreeBase = 360 - initAzimuthDegree;
         lastValidData = actualAzimuthDegree;
 
-        automObject.takePicture(orientation.getAzimuth());
+        automObject.takePictureCall(orientation.getAzimuth());
     }
 
     public void stopPanoramaSequence(){
@@ -77,7 +80,6 @@ public class PanoramaMode implements DataVisitorInterface{
 
         double temp = getNormalisedDegrees(dataPackage.getAzimuth());
 
-        //System.out.println(temp+" tu");
         if(temp > lastValidData + dataThreshold || temp < lastValidData - dataThreshold){
             return;
         }else{
@@ -99,7 +101,7 @@ public class PanoramaMode implements DataVisitorInterface{
                 Math.abs(temp - actualAzimuthDegree) < maxChange
                 && temp > actualAzimuthDegree && bufferCheck(actualAzimuthDegree+degreeGap)){
             actualAzimuthDegree = temp;
-            automObject.takePicture(dataPackage.getAzimuth());
+            automObject.takePictureCall(dataPackage.getAzimuth());
         }
 
         if(temp > 360 - degreeGap/2 && Math.abs(temp - actualAzimuthDegree) < maxChange){
@@ -117,7 +119,7 @@ public class PanoramaMode implements DataVisitorInterface{
             }
         }
 
-        if(positiveIter > 0.5*buffer.size()){
+        if(positiveIter > successRate*buffer.size()){
             return true;
         }
         return false;

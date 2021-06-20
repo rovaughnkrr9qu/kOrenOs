@@ -180,8 +180,8 @@ public class OrientationService implements SensorEventListener{
             SensorManager.remapCoordinateSystem(matrixData, axisX, axisY, rotationMatrix);
             SensorManager.getOrientation(rotationMatrix, orientation);
 
-            double azimuth = convertToDegrees((orientation[0] + twoPi) % twoPi);
-            double pitch = convertToDegrees((orientation[1] + twoPi) % twoPi);
+            double azimuth = convertToDegreesAzimuth((orientation[0] + twoPi) % twoPi);
+            double pitch = convertToDegreesPitch((orientation[1] + twoPi) % twoPi);
 
             saveData(azimuth, pitch);
 
@@ -190,7 +190,7 @@ public class OrientationService implements SensorEventListener{
             }
 
             if(azimuthStatisticAverage.dataGathered() && pitchStatisticAverage.dataGathered()){
-                demandingActivity.orientationDataReady();
+                demandingActivity.getActualOrientationData(actualOrientationPackage);
             }
         }
     }
@@ -215,8 +215,17 @@ public class OrientationService implements SensorEventListener{
         }
     }
 
-    private double convertToDegrees(double radianAngle){
+    private double convertToDegreesAzimuth(double radianAngle){
         return radianAngle * 180 / Math.PI;
+    }
+
+    private double convertToDegreesPitch(double radianAngle){
+        double value180 = ((radianAngle * 180 / Math.PI)+90)%180;
+        if(value180 <= 90){
+            return 90-value180;
+        }else{
+            return -1.0*value180+90;
+        }
     }
 
     public void addDataVisitor(DataVisitorInterface visitor){
