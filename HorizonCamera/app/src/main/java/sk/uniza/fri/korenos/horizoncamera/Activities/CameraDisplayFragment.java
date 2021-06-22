@@ -29,6 +29,7 @@ import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationDemandingAct
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationService;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.AutomaticModeInterface;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.CameraView;
+import sk.uniza.fri.korenos.horizoncamera.SupportClass.DataVisitorInterface;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.MediaDataSaver;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.OrientationDataPackage;
 
@@ -36,14 +37,15 @@ import sk.uniza.fri.korenos.horizoncamera.SupportClass.OrientationDataPackage;
  * Created by Markos on 10. 11. 2016.
  */
 
-public class CameraDisplayFragment extends Fragment implements OrientationDemandingActivityInterface {
+public class CameraDisplayFragment extends Fragment implements OrientationDemandingActivityInterface, DataVisitorInterface {
 
     public static final String BUNCH_NAME_EXTRAS_NAME = "bunchName";
 
     protected Camera camera = null;
     protected CameraView cameraShow;
+    protected CameraSides cameraActiveSide;
+
     private FrameLayout displayArea;
-    private CameraSides cameraActiveSide;
 
     private int successCode = 200;
 
@@ -236,7 +238,7 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
 
                 int rotationDegrees = MediaLocationsAndSettingsTimeService.orientationChange(getActivity().getApplicationContext());
                 MediaDataSaver.savePhoto(bytes, bunchName, orientationData,
-                        DatabaseService.getDbInstance(getActivity().getApplicationContext()), rotationDegrees, backCameraSide);
+                        DatabaseService.getDbInstance(getActivity().getApplicationContext()), rotationDegrees, backCameraSide, true);
                 restartPreview();
             }
         });
@@ -247,6 +249,7 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
             orientationService = new OrientationService(this, (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE));
         }
         orientationService.startOrientationSensors();
+        orientationService.addDataVisitor(this);
     }
 
     protected void stopOrientationService(boolean highPriority){
@@ -254,6 +257,7 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
             if (orientationService != null) {
                 orientationService.stopOrientationSensors();
                 orientationService.stopGPS();
+                orientationService.removeDataVisitor(this);
             }
         }
     }
@@ -291,6 +295,9 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
 
     protected void resetSecondaryButtonListener(){
         ImageView secondaryButton = (ImageView) getView().findViewById(R.id.mediaFragmentGalleryButton);
+
+        secondaryButton.setOnTouchListener(null);
+
         secondaryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -345,7 +352,15 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
     }
 
     @Override
-    public void getActualOrientationData(OrientationDataPackage actualOrientationData) {
+    public void orientationDataReady() {
+    }
+
+    @Override
+    public void GPSDataReady() {
+    }
+
+    @Override
+    public void getOrientationData(OrientationDataPackage actualOrientationData) {
         if(MediaLocationsAndSettingsTimeService.getShowAdditionalDataOnScreen()){
             TextView azimuthTextBox = (TextView) getView().findViewById(R.id.mediaFragmentOrientationAzimuthTextBar);
             TextView pitchTextBox = (TextView) getView().findViewById(R.id.mediaFragmentOrientationPitchTextBar);
@@ -355,11 +370,7 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
         }
     }
 
-    @Override
-    public void GPSDataReady() {
-    }
-
-    private enum CameraSides {
+    protected enum CameraSides {
         back, front
     }
 }

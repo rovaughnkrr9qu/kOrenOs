@@ -9,6 +9,7 @@ import android.util.Log;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import sk.uniza.fri.korenos.horizoncamera.DatabaseEntities.Frame;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
@@ -21,13 +22,24 @@ import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
 
 public class MediaDataSaver {
 
+    public static boolean saveGroupOfPhotos(List<byte[]> photoData, String bunchName, List<OrientationDataPackage> orientationData,
+                                         DatabaseService database, int rotationDegrees, boolean frontCamera, boolean photoFormat){
+        if(photoData.size() != orientationData.size()){
+            return false;
+        }
+
+        for(int index = 0; index < photoData.size(); index++){
+            savePhoto(photoData.get(index), bunchName, orientationData.get(index), database, rotationDegrees, frontCamera, photoFormat);
+        }
+        return true;
+    }
+
     public static void savePhoto(byte[] photoData, String bunchName, OrientationDataPackage orientationData,
-                                 DatabaseService database, int rotationDegrees, boolean frontCamera){
+                                 DatabaseService database, int rotationDegrees, boolean frontCamera, boolean photoFormat){
         DataOperationServices.checkOrCreateDefaultBunch(MediaLocationsAndSettingsTimeService.getBaseLocation(),
                 bunchName, database);
 
         MediaLocationsAndSettingsTimeService.setBunchName(bunchName);
-
         MediaLocationData locationData = MediaLocationsAndSettingsTimeService.getPhotoName();
 
         try {
@@ -43,7 +55,7 @@ public class MediaDataSaver {
             FileOutputStream outputStream = new FileOutputStream(locationData.getFullPath());
 
             Bitmap realImage = MediaLocationsAndSettingsTimeService.rotate(BitmapFactory.decodeByteArray(photoData, 0, photoData.length)
-                    , rotationDegrees);
+                    ,rotationDegrees);
             realImage.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
 
             outputStream.close();
@@ -55,12 +67,17 @@ public class MediaDataSaver {
             return;
         }
 
+        int format = 0;
+        if(!photoFormat){
+            format = 1;
+        }
+
         if(orientationData == null){
             database.insertRow(new Frame(locationData.getFrameNumber(),locationData.getBaseName(), DataOperationServices.findBunchID(bunchName, database),
-                    MediaLocationsAndSettingsTimeService.getCurrentTime(), 0, null, null));
+                    MediaLocationsAndSettingsTimeService.getCurrentTime(), format, null, null));
         }else{
             database.insertRow(new Frame(locationData.getFrameNumber(),locationData.getBaseName(), DataOperationServices.findBunchID(bunchName, database),
-                    orientationData.getTimeStamp(), 0, orientationData.getPitch(), orientationData.getAzimuth()));
+                    orientationData.getTimeStamp(), format, orientationData.getPitch(), orientationData.getAzimuth()));
         }
 
         Cursor cursor = database.selectRow(new Frame(null, null, null, null, null, null, null));

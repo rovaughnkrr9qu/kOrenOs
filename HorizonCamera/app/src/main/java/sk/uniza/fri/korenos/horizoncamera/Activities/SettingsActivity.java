@@ -26,11 +26,17 @@ public class SettingsActivity extends AppCompatActivity {
         CheckBox showAdditionalDataOnScreen = (CheckBox) findViewById(R.id.settingsSaveShowAdditionalDataOnScreenCheckBox);
         showAdditionalDataOnScreen.setChecked(MediaLocationsAndSettingsTimeService.getShowAdditionalDataOnScreen());
 
+        CheckBox deleteVideoAfterProcessing = (CheckBox) findViewById(R.id.settingsDeleteVideoAfterProcessingCheckBox);
+        deleteVideoAfterProcessing.setChecked(MediaLocationsAndSettingsTimeService.getDeleteVideoAfterProcessing());
+
         EditText URLAddress = (EditText) findViewById(R.id.settingsURLAddressEditText);
         URLAddress.setText(MediaLocationsAndSettingsTimeService.getServerURLAddress());
 
         EditText defaultBunch = (EditText) findViewById(R.id.settingsDefaultBunchEditText);
         defaultBunch.setText(MediaLocationsAndSettingsTimeService.getDefaultBunch());
+
+        EditText savedFramesPerSecondVideo = (EditText) findViewById(R.id.settingsVideoSavedFramesPerSecondEditText);
+        savedFramesPerSecondVideo.setText(MediaLocationsAndSettingsTimeService.getVideoSavedFramesPerSecond()+"");
     }
 
     @Override
@@ -43,10 +49,16 @@ public class SettingsActivity extends AppCompatActivity {
         EditText defaultBunch = (EditText) findViewById(R.id.settingsDefaultBunchEditText);
         MediaLocationsAndSettingsTimeService.setDefaultBunch(defaultBunch.getText().toString());
 
+        EditText savedFramesPerSecondVideo = (EditText) findViewById(R.id.settingsVideoSavedFramesPerSecondEditText);
+        MediaLocationsAndSettingsTimeService.setVideoSavedFramesPerSecond(Integer.parseInt(savedFramesPerSecondVideo.getText().toString()));
+
         CheckBox saveAdditionalDataCheckBox = (CheckBox) findViewById(R.id.settingsSaveAdditionalDataCheckBox);
         MediaLocationsAndSettingsTimeService.setSaveAdditionalData(saveAdditionalDataCheckBox.isChecked());
 
         CheckBox showAdditionalDataOnScreen = (CheckBox) findViewById(R.id.settingsSaveShowAdditionalDataOnScreenCheckBox);
         MediaLocationsAndSettingsTimeService.setShowAdditionalDataOnScreen(showAdditionalDataOnScreen.isChecked());
+
+        CheckBox deleteVideoAfterProcessing = (CheckBox) findViewById(R.id.settingsDeleteVideoAfterProcessingCheckBox);
+        MediaLocationsAndSettingsTimeService.setDeleteVideoAfterProcessing(deleteVideoAfterProcessing.isChecked());
     }
 }

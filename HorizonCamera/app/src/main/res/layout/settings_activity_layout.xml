@@ -42,4 +42,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/settingsSaveShowAdditionalDataOnScreenCheckBox" />
+
+    <TextView
+        android:text="@string/settingsVideoSavedFramesPerSecondLabelText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/settingsVideoSavedFramesPerSecondLabel" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:text=""
+        android:ems="10"
+        android:id="@+id/settingsVideoSavedFramesPerSecondEditText" />
+
+    <CheckBox
+        android:text="@string/settingsDeleteVideoAfterProcessingCheckBoxText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/settingsDeleteVideoAfterProcessingCheckBox" />
 </LinearLayout>

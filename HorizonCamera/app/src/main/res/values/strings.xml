@@ -8,6 +8,8 @@
     <string name="settingsActivityLabel">Settings</string>
     <string name="settingsServerURLAddressTextLabel">Server URL address</string>
     <string name="settingsServerShowDataOnScreenTextLabel">Show additional data on screen</string>
+    <string name="settingsDeleteVideoAfterProcessingCheckBoxText">Delete video after processing</string>
+    <string name="settingsVideoSavedFramesPerSecondLabelText">Saved frames per second from video source</string>
     <string name="newBunchActivityLabel">New bunch</string>
     <string name="galleryActivityLabel">Gallery</string>
     <string name="settingsSaveAdditionalDataCheckBoxText">Save additional data</string>

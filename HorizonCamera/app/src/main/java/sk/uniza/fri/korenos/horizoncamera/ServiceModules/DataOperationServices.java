@@ -88,6 +88,11 @@ public class DataOperationServices {
         return BitmapFactory.decodeFile(path, options);
     }
 
+    public static void deleteFile(String filePath) {
+        File file = new File(filePath);
+        file.delete();
+    }
+
     public static String formatCodeDecoder(int formatCode){
         switch (formatCode){
             case 0: return "Picture";

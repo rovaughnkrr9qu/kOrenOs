@@ -139,6 +139,9 @@ public class OrientationService implements SensorEventListener{
     }
 
     public OrientationDataPackage getActualOrientation(){
+        if(actualOrientationPackage == null){
+            return null;
+        }
         return new OrientationDataPackage(actualOrientationPackage);
     }
 
@@ -185,12 +188,11 @@ public class OrientationService implements SensorEventListener{
 
             saveData(azimuth, pitch);
 
-            for(DataVisitorInterface visitor : dataVisitor){
-                visitor.getOrientationData(actualOrientationPackage);
-            }
-
-            if(azimuthStatisticAverage.dataGathered() && pitchStatisticAverage.dataGathered()){
-                demandingActivity.getActualOrientationData(actualOrientationPackage);
+            if(azimuthStatisticAverage.dataGathered() && pitchStatisticAverage.dataGathered()) {
+                for (DataVisitorInterface visitor : dataVisitor) {
+                    visitor.getOrientationData(actualOrientationPackage);
+                }
+                demandingActivity.orientationDataReady();
             }
         }
     }

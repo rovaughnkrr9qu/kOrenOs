@@ -10,12 +10,19 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.List;
 
 import sk.uniza.fri.korenos.horizoncamera.R;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
+import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationService;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.AutomaticModeInterface;
+import sk.uniza.fri.korenos.horizoncamera.SupportClass.MediaDataSaver;
+import sk.uniza.fri.korenos.horizoncamera.SupportClass.OrientationDataContainer;
+import sk.uniza.fri.korenos.horizoncamera.SupportClass.OrientationDataPackage;
 import sk.uniza.fri.korenos.horizoncamera.SupportClass.PanoramaMode;
+import sk.uniza.fri.korenos.horizoncamera.SupportClass.VideoCutter;
 
 /**
  * Created by Markos on 10. 11. 2016.
@@ -26,6 +33,10 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
     private MediaRecorder mediaRecorder;
     private boolean panoramaMode = false;
     private RecordingState recState = RecordingState.preview;
+    private OrientationDataContainer videoOrientationDataContainer;
+
+    private long recordingStartTime = -1;
+    private String fullPathLastVideo;
 
     @Override
     protected void setMediaImages() {
@@ -90,8 +101,8 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
 
         ImageView panoramaButton = (ImageView) getView().findViewById(R.id.mediaFragmentLightButton);
         setPanoramaButtonFunction(panoramaButton);
-        resetSecondaryButtonListener();
 
+        resetSecondaryButtonListener();
         stopOrientationService(false);
     }
 
@@ -104,18 +115,18 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
             @Override
             public void onClick(View view) {
                 recState = RecordingState.pause;
+
                 mediaFunctions();
             }
         });
 
-        secondaryButton.setOnTouchListener(new View.OnTouchListener() {
+        secondaryButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public void onClick(View view) {
                 recState = RecordingState.preview;
 
                 stopRecording();
                 mediaFunctions();
-                return true;
             }
         });
     }
@@ -190,8 +201,6 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
 
     private void setPanoramaDisable(){
         ImageView panoramaButton = (ImageView) getView().findViewById(R.id.mediaFragmentLightButton);
-        panoramaButton.getBackground().setAlpha(255);
-
         panoramaButton.setOnClickListener(null);
     }
 
@@ -205,10 +214,15 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
             Toast.makeText(getActivity(), "Failure!", Toast.LENGTH_LONG).show();
             getActivity().finish();
         }
+        startOrientationService();
         Toast.makeText(getActivity(), "Recording started", Toast.LENGTH_LONG).show();
         Runnable videoRecording = new Runnable() {
             public void run() {
                 try {
+                    if(MediaLocationsAndSettingsTimeService.getSaveAdditionalData()){
+                        initVideoOrientationDataContainer();
+                        recordingStartTime = MediaLocationsAndSettingsTimeService.getCurrentTime();
+                    }
                     mediaRecorder.start();
                 } catch (final Exception ex) {
                 }
@@ -217,15 +231,49 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
         executeOnProcessThread(videoRecording);
     }
 
+    private void initVideoOrientationDataContainer(){
+        videoOrientationDataContainer = new OrientationDataContainer(1000/MediaLocationsAndSettingsTimeService.getVideoSavedFramesPerSecond(),
+                orientationService);
+        videoOrientationDataContainer.startTimerAndGatheringProcess();
+    }
+
+    private void finnishVideoOrientationDataContainer(){
+        Runnable cutPhoto = new Runnable() {
+            @Override
+            public void run() {
+                if(videoOrientationDataContainer != null) {
+                    videoOrientationDataContainer.stopGatheringProcess();
+                    videoCut(videoOrientationDataContainer.getGatheredData());
+                    if(MediaLocationsAndSettingsTimeService.getDeleteVideoAfterProcessing()){
+                        deleteVidelFromStorage();
+                    }
+                    videoOrientationDataContainer = null;
+                    recordingStartTime = -1;
+                    fullPathLastVideo = null;
+                }
+            }
+        };
+        executeOnProcessThread(cutPhoto);
+    }
+
     private void stopRecording(){
-        mediaRecorder.stop();
-        closeMediaRecorder();
-        Toast.makeText(getActivity(), "Video captured!", Toast.LENGTH_LONG).show();
+        if(mediaRecorder != null) {
+            try {
+                mediaRecorder.stop();
+                closeMediaRecorder();
+                Toast.makeText(getActivity(), "Video captured!", Toast.LENGTH_LONG).show();
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                Toast.makeText(getActivity(), "Video not captured!", Toast.LENGTH_LONG).show();
+            }
+            if(MediaLocationsAndSettingsTimeService.getSaveAdditionalData()){
+                finnishVideoOrientationDataContainer();
+            }
+        }
         restartPreview();
     }
 
-    private boolean prepareMediaRecorder()
-    {
+    private boolean prepareMediaRecorder(){
         mediaRecorder = new MediaRecorder();
         camera.unlock();
         mediaRecorder.setCamera(camera);
@@ -234,21 +282,24 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
         profile.fileFormat = MediaLocationsAndSettingsTimeService.selectedVideoFormat();
         mediaRecorder.setProfile(profile);
-        mediaRecorder.setOutputFile(MediaLocationsAndSettingsTimeService.getVideoName().getFullPath());
+        fullPathLastVideo = MediaLocationsAndSettingsTimeService.getVideoName().getFullPath();
+        mediaRecorder.setOutputFile(fullPathLastVideo);
         mediaRecorder.setOrientationHint(cameraShow.orientationChange());
         try {
             mediaRecorder.prepare();
         } catch (IllegalStateException e) {
+            e.printStackTrace();
             closeMediaRecorder();
             return false;
         } catch (IOException e) {
+            e.printStackTrace();
             closeMediaRecorder();
             return false;
         }
         return true;
     }
 
-    private void closeMediaRecorder() {
+    private void closeMediaRecorder(){
         if (mediaRecorder != null) {
             mediaRecorder.reset();
             mediaRecorder.release();
@@ -260,6 +311,29 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
     private void executeOnProcessThread(Runnable task){
         Thread processThread = new Thread(task);
         processThread.start();
+    }
+
+    private void videoCut(List<OrientationDataPackage> videoOrientationData){
+        VideoCutter cutter = new VideoCutter(fullPathLastVideo, recordingStartTime);
+
+        List<byte[]> cutFrames = cutter.cutFrames(videoOrientationData);
+        List<OrientationDataPackage> updatedOrientationData = cutter.getUpdatedOrientationData();
+
+        if(cutFrames == null){
+            return;
+        }
+
+        boolean backCameraSide = true;
+        if(cameraActiveSide == CameraSides.back){
+            backCameraSide = false;
+        }
+
+        MediaDataSaver.saveGroupOfPhotos(cutFrames, bunchName, updatedOrientationData,
+                DatabaseService.getDbInstance(getActivity().getApplicationContext()), 0, backCameraSide, false);
+    }
+
+    private void deleteVidelFromStorage(){
+        DataOperationServices.deleteFile(fullPathLastVideo);
     }
 
     @Override

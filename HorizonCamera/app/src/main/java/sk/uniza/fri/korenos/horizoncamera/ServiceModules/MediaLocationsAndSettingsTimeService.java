@@ -27,6 +27,8 @@ public class MediaLocationsAndSettingsTimeService {
     public static final String SETTINGS_SHOW_ADDITIONAL_DATA_ON_SCREEN = "showAdditionalDataOnScreen";
     public static final String SETTINGS_SAVE_NAME_ADDITIONAL_DATA_SAVE_STATUS = "additionalDataSave";
     public static final String SETTINGS_SAVE_NAME_DEFAULT_BUNCH = "defaultBrunchSave";
+    public static final String SETTINGS_SAVE_VIDEO_FRAMES_PER_SEC = "videoFramesPerSecond";
+    public static final String SETTINGS_SAVE_DELETE_VIDEO_AFTER_PROCESSING = "deleteVideoAfterProcessing";
 
     private static String serverURLAddress = "http://httpbin.org/post";
 
@@ -40,6 +42,9 @@ public class MediaLocationsAndSettingsTimeService {
 
     private static boolean saveAdditionalData = true;
     private static boolean showAdditionalDataOnScreen = false;
+
+    private static boolean deleteVideoAfterProcessing = true;
+    private static int videoSavedFramesPerSecond = 1;
 
     private static String bunchName;
     private static SharedPreferences savePreferences;
@@ -58,11 +63,19 @@ public class MediaLocationsAndSettingsTimeService {
         }
         bunchName = defaultBunch;
 
-        boolean loadAdditionalDataSave = savePreferences.getBoolean(SETTINGS_SAVE_NAME_ADDITIONAL_DATA_SAVE_STATUS, true);
+        boolean loadAdditionalDataSave = savePreferences.getBoolean(SETTINGS_SAVE_NAME_ADDITIONAL_DATA_SAVE_STATUS, saveAdditionalData);
         saveAdditionalData = loadAdditionalDataSave;
 
-        boolean loadShowAdditionalData = savePreferences.getBoolean(SETTINGS_SHOW_ADDITIONAL_DATA_ON_SCREEN, false);
+        boolean loadDeleteVideoAfterProcessing = savePreferences.getBoolean(SETTINGS_SAVE_DELETE_VIDEO_AFTER_PROCESSING, deleteVideoAfterProcessing);
+        deleteVideoAfterProcessing = loadDeleteVideoAfterProcessing;
+
+        boolean loadShowAdditionalData = savePreferences.getBoolean(SETTINGS_SHOW_ADDITIONAL_DATA_ON_SCREEN, showAdditionalDataOnScreen);
         showAdditionalDataOnScreen = loadShowAdditionalData;
+
+        int loadVideoFramePerSecond = savePreferences.getInt(SETTINGS_SAVE_VIDEO_FRAMES_PER_SEC, -1);
+        if(loadVideoFramePerSecond != -1){
+            videoSavedFramesPerSecond = loadVideoFramePerSecond;
+        }
     }
 
     public static String getDefaultBunch(){
@@ -101,6 +114,18 @@ public class MediaLocationsAndSettingsTimeService {
         editor.commit();
     }
 
+    public static int getVideoSavedFramesPerSecond(){
+        return videoSavedFramesPerSecond;
+    }
+
+    public static void setVideoSavedFramesPerSecond(int videoSavedFramesPerSecondValue){
+        videoSavedFramesPerSecond = videoSavedFramesPerSecondValue;
+
+        SharedPreferences.Editor editor = savePreferences.edit();
+        editor.putInt(SETTINGS_SAVE_VIDEO_FRAMES_PER_SEC, videoSavedFramesPerSecond);
+        editor.commit();
+    }
+
     public static String getServerURLAddress(){
         return serverURLAddress;
     }
@@ -130,6 +155,18 @@ public class MediaLocationsAndSettingsTimeService {
 
         SharedPreferences.Editor editor = savePreferences.edit();
         editor.putBoolean(SETTINGS_SHOW_ADDITIONAL_DATA_ON_SCREEN, showAdditionalDataOnScreenStatus);
+        editor.commit();
+    }
+
+    public static boolean getDeleteVideoAfterProcessing(){
+        return deleteVideoAfterProcessing;
+    }
+
+    public static void setDeleteVideoAfterProcessing(boolean deleteVideoAfterProcessingValue){
+        deleteVideoAfterProcessing = deleteVideoAfterProcessingValue;
+
+        SharedPreferences.Editor editor = savePreferences.edit();
+        editor.putBoolean(SETTINGS_SAVE_DELETE_VIDEO_AFTER_PROCESSING, deleteVideoAfterProcessingValue);
         editor.commit();
     }
 
@@ -239,10 +276,5 @@ public class MediaLocationsAndSettingsTimeService {
             }
         }
         return -1;
-    }
-
-    public enum videoTypes{
-        mp4,
-        threeGpp
     }
 }

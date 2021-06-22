@@ -156,7 +156,7 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
     }
 
     @Override
-    public void getActualOrientationData(OrientationDataPackage actualOrientationData) {
+    public void orientationDataReady() {
     }
 
     @Override

@@ -97,8 +97,7 @@ public class FrameGalleryActivity extends GalleryActivityTemplate{
         String imagePath = DataOperationServices.composeImagePath(selectedBunch.getString(selectedBunch.getColumnIndex(Bunch.COLUMN_NAMES[3])),
                 frameName, frameNumber);
 
-        File file = new File(imagePath);
-        file.delete();
+        DataOperationServices.deleteFile(imagePath);
 
         return database.deleteRow(new Frame(frameNumber, frameName, bunchID, null, null, null, null));
     }

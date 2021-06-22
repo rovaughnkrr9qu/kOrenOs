@@ -1,26 +1,11 @@
 package sk.uniza.fri.korenos.horizoncamera.Activities;
 
-import android.app.Activity;
-import android.content.Context;
 import android.hardware.Camera;
-import android.hardware.SensorManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import sk.uniza.fri.korenos.horizoncamera.R;
-import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DatabaseService;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
-import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationDemandingActivityInterface;
-import sk.uniza.fri.korenos.horizoncamera.ServiceModules.OrientationService;
-import sk.uniza.fri.korenos.horizoncamera.SupportClass.AutomaticModeInterface;
-import sk.uniza.fri.korenos.horizoncamera.SupportClass.MediaDataSaver;
-import sk.uniza.fri.korenos.horizoncamera.SupportClass.OrientationDataPackage;
 
 /**
  * Created by Markos on 11. 11. 2016.
@@ -84,8 +69,8 @@ public class PhotoDisplaySpecialisation extends CameraDisplayFragment{
     }
 
     @Override
-    public void getActualOrientationData(OrientationDataPackage actualOrientationData) {
-        super.getActualOrientationData(actualOrientationData);
+    public void orientationDataReady() {
+        super.orientationDataReady();
         if(photoSequence) {
             photoSequence = false;
             takePicture();

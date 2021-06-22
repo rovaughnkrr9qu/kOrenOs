@@ -15,6 +15,6 @@ public interface OrientationDemandingActivityInterface {
     int getSuccessRequestCode();
     Activity getDemandingActivity();
 
-    void getActualOrientationData(OrientationDataPackage actualOrientationData);
+    void orientationDataReady();
     void GPSDataReady();
 }
