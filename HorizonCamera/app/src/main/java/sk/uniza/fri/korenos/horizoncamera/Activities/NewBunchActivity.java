@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -32,11 +33,17 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
     private int newActivityRequestCode = 23;
     private String bunchPath;
     private OrientationService orientationService;
+    private boolean photoMedia = true;
+
+    private TextView signalText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_bunch_activity_layout);
+
+        signalText = (TextView) findViewById(R.id.newBunchSignalText);
+        signalText.setAlpha(0);
     }
 
     public void findExistingBunchAction(View view) {
@@ -45,7 +52,7 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
         startActivityForResult(intent, newActivityRequestCode);
     }
 
-    public void createBunchAction(View view) {
+    public void createBunchAction(){
         disablingFunctions();
 
         EditText bunchNameEditText = (EditText) findViewById(R.id.newBunchActivityNewBunchNameText);
@@ -58,15 +65,22 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
         addToDatabase();
     }
 
+    public void createBunchWithPhotoMedia(View view) {
+        photoMedia = true;
+        createBunchAction();
+    }
+
+    public void createBunchWithVideoMedia(View view) {
+        photoMedia = false;
+        createBunchAction();
+    }
+
     private void disablingFunctions(){
         EditText bunchNameEditText = (EditText) findViewById(R.id.newBunchActivityNewBunchNameText);
         bunchNameEditText.setEnabled(false);
 
         CheckBox additionalInformationSave = (CheckBox) findViewById(R.id.newBunchActivitySaveAdditionalDataCheckBox);
         additionalInformationSave.setEnabled(false);
-
-        CheckBox pictureMediaCheckBox = (CheckBox) findViewById(R.id.newBunchActivityPictureMediaCheckBox);
-        pictureMediaCheckBox.setEnabled(false);
     }
 
     private void addToDatabase() {
@@ -77,6 +91,7 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
             orientationService.getMomentalGPSLocation();
 
             Toast.makeText(this, R.string.newBunchActivityGPSWaitingToastText, Toast.LENGTH_LONG).show();
+            signalText.setAlpha(1);
         }else{
             createBunchInstance(false, null);
         }
@@ -102,6 +117,9 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
             }
         }
 
+        orientationService.stopGPS();
+
+        signalText.setAlpha(0);
         openMediaActivity(folderName);
     }
 
@@ -110,9 +128,7 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
     }
 
     private void openMediaActivity(String bunchName) {
-        CheckBox mediaCHeckBox = (CheckBox) findViewById(R.id.newBunchActivityPictureMediaCheckBox);
-
-        if(mediaCHeckBox.isChecked()){      //picture media
+        if(photoMedia){      //picture media
             Intent intent = new Intent(this,MediaScreenActivity.class);
             intent.putExtra(MediaScreenActivity.MEDIA_NAME_EXTRAS_NAME, MediaScreenActivity.PHOTO_MEDIA_CODE);
             intent.putExtra(CameraDisplayFragment.BUNCH_NAME_EXTRAS_NAME, bunchName);

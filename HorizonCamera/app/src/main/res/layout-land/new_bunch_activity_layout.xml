@@ -7,7 +7,7 @@
         android:id="@+id/newBunchActivityNewBunchNameLabelText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp">
 
         <EditText
@@ -28,7 +28,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_marginStart="5dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="5dp"
         style="@style/Widget.AppCompat.Button.Colored"/>
 
     <Button
@@ -40,18 +40,8 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="5dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="5dp"
         style="@style/Widget.AppCompat.Button.Colored"/>
-
-    <CheckBox
-        android:text="@string/newBunchActivitySaveAdditionalDataCheckBoxText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="39dp"
-        android:id="@+id/newBunchActivitySaveAdditionalDataCheckBox"
-        android:layout_below="@+id/newBunchActivityChooseExistingBunchButton"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
 
     <Button
         android:onClick="findExistingBunchAction"
@@ -59,17 +49,26 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/newBunchActivityChooseExistingBunchButton"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="14dp"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_below="@+id/newBunchActivityNewBunchNameLabelText"
         android:layout_centerHorizontal="true" />
+
+    <CheckBox
+        android:text="@string/newBunchActivitySaveAdditionalDataCheckBoxText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/newBunchActivitySaveAdditionalDataCheckBox"
+        android:layout_marginTop="21dp"
+        android:layout_below="@+id/newBunchActivityChooseExistingBunchButton"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:text="@string/newBunchActivityWaitingGPSSignalText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/newBunchSignalText"
-        android:layout_below="@+id/newBunchActivitySaveAdditionalDataCheckBox"
+        android:layout_above="@+id/newBunchActivityCreateBunchInitPhotoButton"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="108dp" />
+        android:layout_marginBottom="34dp" />
 </RelativeLayout>

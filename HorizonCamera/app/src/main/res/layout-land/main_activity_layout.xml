@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainActivityBackgraound"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="sk.uniza.fri.korenos.horizoncamera.Activities.MainActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/horizon_camera_main_logo"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/mainLogoImage" />
+
+    <Button
+        android:onClick="goToGalleryActivityAction"
+        android:text="@string/mainMenuGalleryButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mainMenuGalleryButton"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_below="@id/mainMenuSettingsButton"
+        android:layout_alignEnd="@+id/mainMenuSettingsButton"
+        android:layout_alignStart="@+id/mainMenuSettingsButton"/>
+
+    <Button
+        android:onClick="goToPhotoActivityAction"
+        android:text="@string/mainMenuPhotoButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mainMenuPhotoButton"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_alignBaseline="@+id/mainMenuNewBunchButton"
+        android:layout_alignBottom="@+id/mainMenuNewBunchButton"
+        android:layout_alignStart="@+id/mainMenuNewBunchButton"
+        android:layout_marginStart="170dp"/>
+
+    <Button
+        android:onClick="goToVideoActivityAction"
+        android:text="@string/mainMenuVideoButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mainMenuVideoButton"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_below="@+id/mainMenuPhotoButton"
+        android:layout_alignEnd="@+id/mainMenuPhotoButton"
+        android:layout_alignStart="@+id/mainMenuPhotoButton"/>
+
+    <Button
+        android:onClick="goToSettingsActivityAction"
+        android:text="@string/mainMenuSettingsButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mainMenuSettingsButton"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_alignBaseline="@+id/mainMenuNewBunchButton"
+        android:layout_alignBottom="@+id/mainMenuNewBunchButton"
+        android:layout_alignEnd="@+id/mainMenuNewBunchButton"
+        android:layout_marginEnd="170dp"/>
+
+    <Button
+        android:onClick="goToNewBunchActivityAction"
+        android:text="@string/mainMenuNewBunchButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mainMenuNewBunchButton"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_marginBottom="90dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/mainMenuGalleryButton"
+        android:layout_alignEnd="@+id/mainMenuPhotoButton"
+        android:layout_alignTop="@+id/mainMenuPhotoButton"
+        android:layout_alignStart="@+id/mainMenuGalleryButton"
+        android:alpha="0.3"
+        android:background="@color/highlightedItem">
+
+    </RelativeLayout>
+</RelativeLayout>

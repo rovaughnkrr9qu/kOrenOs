@@ -25,7 +25,9 @@ public class PhotoDisplaySpecialisation extends CameraDisplayFragment{
         tempImage = (ImageView) getView().findViewById(R.id.mediaFragmentChangeButton);
         tempImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_videocam_black_24dp));
 
-        cameraShow.setMedia(true);
+        if(cameraShow != null) {
+            cameraShow.setMedia(true);
+        }
     }
 
     private void setLightButton(ImageView button){

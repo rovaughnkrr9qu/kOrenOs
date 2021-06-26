@@ -22,20 +22,26 @@ import sk.uniza.fri.korenos.horizoncamera.ServiceModules.DataOperationServices;
 
 public class MediaDataSaver {
 
+    private static DatabaseService database;
+
+    public static void setContext(DatabaseService databaseService){
+        database = databaseService;
+    }
+
     public static boolean saveGroupOfPhotos(List<byte[]> photoData, String bunchName, List<OrientationDataPackage> orientationData,
-                                         DatabaseService database, int rotationDegrees, boolean frontCamera, boolean photoFormat){
+                                            int rotationDegrees, boolean frontCamera, boolean photoFormat){
         if(photoData.size() != orientationData.size()){
             return false;
         }
 
         for(int index = 0; index < photoData.size(); index++){
-            savePhoto(photoData.get(index), bunchName, orientationData.get(index), database, rotationDegrees, frontCamera, photoFormat);
+            savePhoto(photoData.get(index), bunchName, orientationData.get(index), rotationDegrees, frontCamera, photoFormat);
         }
         return true;
     }
 
     public static void savePhoto(byte[] photoData, String bunchName, OrientationDataPackage orientationData,
-                                 DatabaseService database, int rotationDegrees, boolean frontCamera, boolean photoFormat){
+                                 int rotationDegrees, boolean frontCamera, boolean photoFormat){
         DataOperationServices.checkOrCreateDefaultBunch(MediaLocationsAndSettingsTimeService.getBaseLocation(),
                 bunchName, database);
 

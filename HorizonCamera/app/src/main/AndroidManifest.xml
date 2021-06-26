@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="sk.uniza.fri.korenos.horizoncamera">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -26,21 +26,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.MediaScreenActivity"
+        <activity
+            android:name=".Activities.MediaScreenActivity"
             android:parentActivityName=".Activities.MainActivity" />
-        <activity android:name=".Activities.SettingsActivity"
-            android:theme="@style/AppThemeWithActionBar"
-            android:label="@string/settingsActivityLabel"/>
-        <activity android:name=".Activities.NewBunchActivity"
-            android:theme="@style/AppThemeWithActionBar"
+        <activity
+            android:name=".Activities.NewBunchActivity"
             android:label="@string/newBunchActivityLabel"
-            android:parentActivityName=".Activities.MainActivity"/>
-        <activity android:name=".Activities.BunchGalleryActivity"
-            android:theme="@style/AppThemeWithActionBar"
-            android:label="@string/galleryActivityLabel"/>
-        <activity android:name=".Activities.FrameGalleryActivity"
-            android:theme="@style/AppThemeWithActionBar"
-            android:label="@string/galleryActivityLabel"/>
+            android:parentActivityName=".Activities.MainActivity"
+            android:theme="@style/AppThemeWithActionBar" />
+        <activity
+            android:name=".Activities.BunchGalleryActivity"
+            android:label="@string/galleryActivityLabel"
+            android:theme="@style/AppThemeWithActionBar" />
+        <activity
+            android:name=".Activities.FrameGalleryActivity"
+            android:label="@string/galleryActivityLabel"
+            android:theme="@style/AppThemeWithActionBar" />
+        <activity
+            android:name=".Activities.SettingsActivity"
+            android:label="@string/settingsActivityLabel"></activity>
     </application>
 
 </manifest>

@@ -1,6 +1,7 @@
 package sk.uniza.fri.korenos.horizoncamera.Activities;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.hardware.SensorManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
@@ -50,7 +51,9 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
 
         setPanoramaButtonFunction(tempImage);
 
-        cameraShow.setMedia(false);
+        if(cameraShow != null) {
+            cameraShow.setMedia(false);
+        }
     }
 
     @Override
@@ -59,6 +62,7 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
             stopRecording();
         }
         recState = RecordingState.preview;
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         super.onDestroy();
     }
 
@@ -214,6 +218,8 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
             Toast.makeText(getActivity(), "Failure!", Toast.LENGTH_LONG).show();
             getActivity().finish();
         }
+        MediaDataSaver.setContext(DatabaseService.getDbInstance(getActivity().getApplicationContext()));
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startOrientationService();
         Toast.makeText(getActivity(), "Recording started", Toast.LENGTH_LONG).show();
         Runnable videoRecording = new Runnable() {
@@ -269,6 +275,7 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
             if(MediaLocationsAndSettingsTimeService.getSaveAdditionalData()){
                 finnishVideoOrientationDataContainer();
             }
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
         restartPreview();
     }
@@ -328,8 +335,7 @@ public class VideoDisplaySpecialisation extends CameraDisplayFragment implements
             backCameraSide = false;
         }
 
-        MediaDataSaver.saveGroupOfPhotos(cutFrames, bunchName, updatedOrientationData,
-                DatabaseService.getDbInstance(getActivity().getApplicationContext()), 0, backCameraSide, false);
+        MediaDataSaver.saveGroupOfPhotos(cutFrames, bunchName, updatedOrientationData, 0, backCameraSide, false);
     }
 
     private void deleteVidelFromStorage(){

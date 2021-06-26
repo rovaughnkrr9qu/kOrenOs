@@ -1,0 +1,41 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/settingsOrientationDataPreferencesCategoryName">
+
+        <CheckBoxPreference android:key="@string/settingsSaveAdditionalDataPrefKey"
+            android:title="@string/settingsSaveAdditionalDataCheckBoxText"
+            android:summary="@string/settingsSaveAdditionalDataCheckBoxSubtitleText"
+        />
+
+        <CheckBoxPreference android:key="@string/settingsShowDataOnScreenPrefKey"
+            android:title="@string/settingsShowDataOnScreenTextLabel"
+            android:summary="@string/settingsShowDataOnScreenSubtitleText"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settingsDefaultLocationsPreferencesCategoryName">
+        <EditTextPreference android:key="@string/settingsServerURLAddressPrefKey"
+            android:title="@string/settingsServerURLAddressTextLabel"
+            />
+
+        <EditTextPreference android:key="@string/settingsDefaultBunchNamePrefKey"
+            android:title="@string/settingsDefaultBunchNameTextLabel"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settingsVideoProcessingPreferencesCategoryName">
+        <EditTextPreference android:key="@string/settingsVideoSavedFramesPerSecondPrefKey"
+            android:title="@string/settingsVideoSavedFramesPerSecondLabelText"
+            android:summary="@string/settingsVideoSavedFramesPerSecondSubtitleText"
+            android:inputType="number"/>
+
+        <CheckBoxPreference android:key="@string/settingsDeleteVideoAfterProcessingCheckBoxPrefKey"
+            android:title="@string/settingsDeleteVideoAfterProcessingCheckBoxText"
+            />
+    </PreferenceCategory>
+
+</PreferenceScreen>

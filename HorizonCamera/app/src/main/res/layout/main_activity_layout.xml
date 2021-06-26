@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/mainActivityBackgraound"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -18,7 +19,8 @@
         android:layout_above="@+id/mainMenuSettingsButton"
         android:id="@+id/mainMenuGalleryButton"
         android:layout_alignEnd="@+id/mainMenuVideoButton"
-        android:layout_alignStart="@+id/mainMenuVideoButton" />
+        android:layout_alignStart="@+id/mainMenuVideoButton"
+        style="@style/Widget.AppCompat.Button.Colored"/>
 
     <Button
         android:onClick="goToVideoActivityAction"
@@ -29,7 +31,8 @@
         android:layout_marginBottom="15dp"
         android:id="@+id/mainMenuVideoButton"
         android:layout_alignEnd="@+id/mainMenuPhotoButton"
-        android:layout_alignStart="@+id/mainMenuPhotoButton" />
+        android:layout_alignStart="@+id/mainMenuPhotoButton"
+        style="@style/Widget.AppCompat.Button.Colored"/>
 
     <Button
         android:onClick="goToPhotoActivityAction"
@@ -39,7 +42,8 @@
         android:layout_above="@+id/mainMenuVideoButton"
         android:id="@+id/mainMenuPhotoButton"
         android:layout_alignEnd="@+id/mainMenuNewBunchButton"
-        android:layout_alignStart="@+id/mainMenuNewBunchButton" />
+        android:layout_alignStart="@+id/mainMenuNewBunchButton"
+        style="@style/Widget.AppCompat.Button.Colored"/>
 
     <Button
         android:onClick="goToNewBunchActivityAction"
@@ -49,16 +53,38 @@
         android:layout_marginBottom="15dp"
         android:id="@+id/mainMenuNewBunchButton"
         android:layout_above="@+id/mainMenuPhotoButton"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        style="@style/Widget.AppCompat.Button.Colored"/>
 
     <Button
         android:onClick="goToSettingsActivityAction"
         android:text="@string/mainMenuSettingsButtonText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="30dp"
         android:id="@+id/mainMenuSettingsButton"
         android:layout_alignParentBottom="true"
         android:layout_alignEnd="@+id/mainMenuGalleryButton"
-        android:layout_alignStart="@+id/mainMenuGalleryButton" />
+        android:layout_alignStart="@+id/mainMenuGalleryButton"
+        style="@style/Widget.AppCompat.Button.Colored"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignEnd="@+id/mainMenuGalleryButton"
+        android:layout_alignStart="@+id/mainMenuGalleryButton"
+        android:layout_alignBottom="@+id/mainMenuSettingsButton"
+        android:layout_alignTop="@+id/mainMenuNewBunchButton"
+        android:alpha="0.3"
+        android:background="@color/highlightedItem">
+
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/horizon_camera_main_logo"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/mainLogoImage" />
 </RelativeLayout>

@@ -1,64 +1,62 @@
 package sk.uniza.fri.korenos.horizoncamera.Activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.CheckBox;
-import android.widget.EditText;
+import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
+import android.preference.PreferenceActivity;
 
 import sk.uniza.fri.korenos.horizoncamera.R;
 import sk.uniza.fri.korenos.horizoncamera.ServiceModules.MediaLocationsAndSettingsTimeService;
 
-/**
- * Created by Markos on 21. 11. 2016.
- */
-
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends PreferenceActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings_activity_layout);
+        addPreferencesFromResource(R.xml.settings_references);
 
-        CheckBox saveAdditionalDataCheckBox = (CheckBox) findViewById(R.id.settingsSaveAdditionalDataCheckBox);
-        saveAdditionalDataCheckBox.setChecked(MediaLocationsAndSettingsTimeService.getSaveAdditionalData());
+        CheckBoxPreference saveAdditionalData = (CheckBoxPreference) findPreference(getResources().getString(R.string.settingsSaveAdditionalDataPrefKey));
+        CheckBoxPreference showAdditionalData = (CheckBoxPreference) findPreference(getResources().getString(R.string.settingsShowDataOnScreenPrefKey));
 
-        CheckBox showAdditionalDataOnScreen = (CheckBox) findViewById(R.id.settingsSaveShowAdditionalDataOnScreenCheckBox);
-        showAdditionalDataOnScreen.setChecked(MediaLocationsAndSettingsTimeService.getShowAdditionalDataOnScreen());
+        EditTextPreference serverURLData = (EditTextPreference)findPreference(getResources().getString(R.string.settingsServerURLAddressPrefKey));
+        EditTextPreference defaultBunchData = (EditTextPreference)findPreference(getResources().getString(R.string.settingsDefaultBunchNamePrefKey));
 
-        CheckBox deleteVideoAfterProcessing = (CheckBox) findViewById(R.id.settingsDeleteVideoAfterProcessingCheckBox);
-        deleteVideoAfterProcessing.setChecked(MediaLocationsAndSettingsTimeService.getDeleteVideoAfterProcessing());
+        EditTextPreference FramesPerSecondData = (EditTextPreference)findPreference(getResources().getString(R.string.settingsVideoSavedFramesPerSecondPrefKey));
+        CheckBoxPreference deleteVideoData = (CheckBoxPreference) findPreference(getResources().getString(R.string.settingsDeleteVideoAfterProcessingCheckBoxPrefKey));
 
-        EditText URLAddress = (EditText) findViewById(R.id.settingsURLAddressEditText);
-        URLAddress.setText(MediaLocationsAndSettingsTimeService.getServerURLAddress());
+        saveAdditionalData.setChecked(MediaLocationsAndSettingsTimeService.getSaveAdditionalData());
+        showAdditionalData.setChecked(MediaLocationsAndSettingsTimeService.getShowAdditionalDataOnScreen());
 
-        EditText defaultBunch = (EditText) findViewById(R.id.settingsDefaultBunchEditText);
-        defaultBunch.setText(MediaLocationsAndSettingsTimeService.getDefaultBunch());
+        serverURLData.setText(MediaLocationsAndSettingsTimeService.getServerURLAddress());
+        defaultBunchData.setText(MediaLocationsAndSettingsTimeService.getDefaultBunch());
 
-        EditText savedFramesPerSecondVideo = (EditText) findViewById(R.id.settingsVideoSavedFramesPerSecondEditText);
-        savedFramesPerSecondVideo.setText(MediaLocationsAndSettingsTimeService.getVideoSavedFramesPerSecond()+"");
+        FramesPerSecondData.setText(MediaLocationsAndSettingsTimeService.getVideoSavedFramesPerSecond()+"");
+        deleteVideoData.setChecked(MediaLocationsAndSettingsTimeService.getDeleteVideoAfterProcessing());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        EditText URLAddress = (EditText) findViewById(R.id.settingsURLAddressEditText);
-        MediaLocationsAndSettingsTimeService.setServerULDAddress(URLAddress.getText().toString());
+        CheckBoxPreference saveAdditionalData = (CheckBoxPreference) findPreference(getResources().getString(R.string.settingsSaveAdditionalDataPrefKey));
+        CheckBoxPreference showAdditionalData = (CheckBoxPreference) findPreference(getResources().getString(R.string.settingsShowDataOnScreenPrefKey));
 
-        EditText defaultBunch = (EditText) findViewById(R.id.settingsDefaultBunchEditText);
-        MediaLocationsAndSettingsTimeService.setDefaultBunch(defaultBunch.getText().toString());
+        EditTextPreference serverURLData = (EditTextPreference)findPreference(getResources().getString(R.string.settingsServerURLAddressPrefKey));
+        EditTextPreference defaultBunchData = (EditTextPreference)findPreference(getResources().getString(R.string.settingsDefaultBunchNamePrefKey));
 
-        EditText savedFramesPerSecondVideo = (EditText) findViewById(R.id.settingsVideoSavedFramesPerSecondEditText);
-        MediaLocationsAndSettingsTimeService.setVideoSavedFramesPerSecond(Integer.parseInt(savedFramesPerSecondVideo.getText().toString()));
+        EditTextPreference FramesPerSecondData = (EditTextPreference)findPreference(getResources().getString(R.string.settingsVideoSavedFramesPerSecondPrefKey));
+        CheckBoxPreference deleteVideoData = (CheckBoxPreference) findPreference(getResources().getString(R.string.settingsDeleteVideoAfterProcessingCheckBoxPrefKey));
 
-        CheckBox saveAdditionalDataCheckBox = (CheckBox) findViewById(R.id.settingsSaveAdditionalDataCheckBox);
-        MediaLocationsAndSettingsTimeService.setSaveAdditionalData(saveAdditionalDataCheckBox.isChecked());
+        MediaLocationsAndSettingsTimeService.setSaveAdditionalData(saveAdditionalData.isChecked());
+        MediaLocationsAndSettingsTimeService.setShowAdditionalDataOnScreen(showAdditionalData.isChecked());
 
-        CheckBox showAdditionalDataOnScreen = (CheckBox) findViewById(R.id.settingsSaveShowAdditionalDataOnScreenCheckBox);
-        MediaLocationsAndSettingsTimeService.setShowAdditionalDataOnScreen(showAdditionalDataOnScreen.isChecked());
+        MediaLocationsAndSettingsTimeService.setServerULDAddress(serverURLData.getText());
+        MediaLocationsAndSettingsTimeService.setDefaultBunch(defaultBunchData.getText());
 
-        CheckBox deleteVideoAfterProcessing = (CheckBox) findViewById(R.id.settingsDeleteVideoAfterProcessingCheckBox);
-        MediaLocationsAndSettingsTimeService.setDeleteVideoAfterProcessing(deleteVideoAfterProcessing.isChecked());
+        MediaLocationsAndSettingsTimeService.setVideoSavedFramesPerSecond(Integer.parseInt(FramesPerSecondData.getText()));
+        MediaLocationsAndSettingsTimeService.setDeleteVideoAfterProcessing(deleteVideoData.isChecked());
     }
 }

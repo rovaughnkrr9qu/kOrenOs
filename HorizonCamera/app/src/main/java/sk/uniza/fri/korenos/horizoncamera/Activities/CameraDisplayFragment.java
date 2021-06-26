@@ -223,6 +223,7 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
     }
 
     protected void takePicture(){
+        MediaDataSaver.setContext(DatabaseService.getDbInstance(getActivity().getApplicationContext()));
         camera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] bytes, Camera camera) {
@@ -237,8 +238,7 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
                 }
 
                 int rotationDegrees = MediaLocationsAndSettingsTimeService.orientationChange(getActivity().getApplicationContext());
-                MediaDataSaver.savePhoto(bytes, bunchName, orientationData,
-                        DatabaseService.getDbInstance(getActivity().getApplicationContext()), rotationDegrees, backCameraSide, true);
+                MediaDataSaver.savePhoto(bytes, bunchName, orientationData, rotationDegrees, backCameraSide, true);
                 restartPreview();
             }
         });

@@ -5,19 +5,41 @@
     <string name="mainMenuVideoButtonText">Video</string>
     <string name="mainMenuGalleryButtonText">Gallery</string>
     <string name="mainMenuSettingsButtonText">Settings</string>
+
     <string name="settingsActivityLabel">Settings</string>
     <string name="settingsServerURLAddressTextLabel">Server URL address</string>
-    <string name="settingsServerShowDataOnScreenTextLabel">Show additional data on screen</string>
+    <string name="settingsDefaultBunchNameTextLabel">Default bunch name</string>
+    <string name="settingsShowDataOnScreenTextLabel">Show additional data on screen</string>
+    <string name="settingsShowDataOnScreenSubtitleText">Orientation data will be on the media screen</string>
     <string name="settingsDeleteVideoAfterProcessingCheckBoxText">Delete video after processing</string>
-    <string name="settingsVideoSavedFramesPerSecondLabelText">Saved frames per second from video source</string>
-    <string name="newBunchActivityLabel">New bunch</string>
-    <string name="galleryActivityLabel">Gallery</string>
+    <string name="settingsVideoSavedFramesPerSecondLabelText">Frames per second from video source</string>
+    <string name="settingsVideoSavedFramesPerSecondSubtitleText">Number of frames per second processed from the video source</string>
+    <string name="settingsOrientationDataPreferencesCategoryName">Orientation data</string>
+    <string name="settingsDefaultLocationsPreferencesCategoryName">Default locations</string>
+    <string name="settingsVideoProcessingPreferencesCategoryName">Video processing</string>
     <string name="settingsSaveAdditionalDataCheckBoxText">Save additional data</string>
-    <string name="newBunchActivityCreateNewBunchLabelText">Set name of new bunch</string>
+    <string name="settingsSaveAdditionalDataCheckBoxSubtitleText">Orientation data- GPS location, azimuth, pitch of media files</string>
+
+    <string name="settingsSaveAdditionalDataPrefKey">additionalDataSave</string>
+    <string name="settingsShowDataOnScreenPrefKey">showAdditionalDataOnScreen</string>
+    <string name="settingsServerURLAddressPrefKey">serverURLAddressSave</string>
+    <string name="settingsDefaultBunchNamePrefKey">defaultBrunchSave</string>
+    <string name="settingsVideoSavedFramesPerSecondPrefKey">videoFramesPerSecond</string>
+    <string name="settingsDeleteVideoAfterProcessingCheckBoxPrefKey">deleteVideoAfterProcessing</string>
+
+    <string name="newBunchActivityLabel">New bunch</string>
+    <string name="newBunchActivityCreateNewBunchLabelText">Name of new bunch</string>
     <string name="newBunchActivityChooseExistingBunchButtonText">Choose existing bunch</string>
-    <string name="newBunchActivitySaveAdditionalDataCheckBoxText">Save additional data</string>
+    <string name="newBunchActivitySaveAdditionalDataCheckBoxText">Save initial GPS data</string>
     <string name="newBunchActivityPictureMediaCheckBoxText">Picture media choose (false- video)</string>
-    <string name="newBunchActivitySaveBunchButtonText">Open bunch</string>
+    <string name="newBunchActivitySaveBunchInitPhotoButtonText">Open bunch- Photo</string>
+    <string name="newBunchActivitySaveBunchInitVideoButtonText">Open bunch- Video</string>
+    <string name="newBunchActivityBunchNotCreatedToastText">It was not possible to create bunch with this name.</string>
+    <string name="newBunchActivityGPSWaitingToastText">Wait for GPS localisation</string>
+    <string name="newBunchActivityGPSFoundToastText">GPS location found</string>
+    <string name="newBunchActivityWaitingGPSSignalText">Wait for GPS localisation</string>
+
+    <string name="galleryActivityLabel">Gallery</string>
     <string name="galleryMenuDeleteOptionLabelText">Delete</string>
     <string name="galleryMenuSendOptionLabelText">Send</string>
     <string name="galleryOptionCancelButtonText">Cancel</string>
@@ -29,9 +51,7 @@
     <string name="galleryItemPictureNumberLabel">Pictures in bunch: </string>
     <string name="galleryBunchTitleText">Bunch </string>
     <string name="galleryBunchesTitleText">Gallery of bunches</string>
-    <string name="newBunchActivityBunchNotCreatedToastText">It was not possible to create bunch with this name.</string>
-    <string name="newBunchActivityGPSWaitingToastText">Wait for GPS localisation.</string>
-    <string name="newBunchActivityGPSFoundToastText">GPS location found</string>
+
     <string name="mediaFragmentZoomInButtonText">+</string>
     <string name="mediaFragmentZoomOutButtonText">-</string>
     <string name="mediaFragmentAzimuthDataText">Azimuth: </string>
