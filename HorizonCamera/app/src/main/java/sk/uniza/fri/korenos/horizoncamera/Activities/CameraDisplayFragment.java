@@ -120,7 +120,7 @@ public class CameraDisplayFragment extends Fragment implements OrientationDemand
     }
 
     @Override
-    public void onDestroyView() {
+    public void onDestroy() {
         super.onDestroyView();
         cameraClose();
         cameraShow = null;

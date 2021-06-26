@@ -117,8 +117,6 @@ public class NewBunchActivity extends AppCompatActivity implements OrientationDe
             }
         }
 
-        orientationService.stopGPS();
-
         signalText.setAlpha(0);
         openMediaActivity(folderName);
     }

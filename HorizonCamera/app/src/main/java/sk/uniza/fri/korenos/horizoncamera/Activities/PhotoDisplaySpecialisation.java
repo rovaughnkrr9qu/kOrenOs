@@ -31,8 +31,14 @@ public class PhotoDisplaySpecialisation extends CameraDisplayFragment{
     }
 
     private void setLightButton(ImageView button){
-        Camera.Parameters param = camera.getParameters();
-        if(param.getFlashMode().compareTo(Camera.Parameters.FLASH_MODE_OFF)==0){
+        boolean flashMode = false;
+        Camera.Parameters param = null;
+        if(camera != null){
+            param = camera.getParameters();
+            flashMode = param.getFlashMode().compareTo(Camera.Parameters.FLASH_MODE_OFF)==0;
+        }
+
+        if(flashMode){
             button.setImageDrawable(getResources().getDrawable(R.drawable.ic_flash_off_black_24dp));
         }else{
             button.setImageDrawable(getResources().getDrawable(R.drawable.ic_flash_on_black_24dp));
