@@ -40,8 +40,8 @@ public class DatabaseService extends SQLiteOpenHelper{
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
     }
 
-    public long insertRow(EntityInterface bunchInstance){
-        return getWritableDatabase().insert(bunchInstance.getTableName(), null, bunchInstance.getInsertContent());
+    public long insertRow(EntityInterface entity){
+        return getWritableDatabase().insert(entity.getTableName(), null, entity.getInsertContent());
     }
 
     public Cursor selectRow(EntityInterface entity){
@@ -51,33 +51,4 @@ public class DatabaseService extends SQLiteOpenHelper{
     public int deleteRow(EntityInterface entity){
         return getWritableDatabase().delete(entity.getTableName(), entity.getSelectionString(), null);
     }
-
-    /*private static String createInitString( entityClass){
-        StringBuilder bunchTableCreator = new StringBuilder("create table ");
-        bunchTableCreator.append(entityClass.NAME);
-        bunchTableCreator.append("(");
-        for(int i = 0; i < entityClass.COLUMN_NAMES.length; i++){
-            bunchTableCreator.append(entityClass.COLUMN_NAMES[i]);
-            bunchTableCreator.append(" ");
-            bunchTableCreator.append(entityClass.COLUMN_TYPES[i]);
-            if(entityClass.COLUMN_SPECIFICATIONS.size() > i) {
-                bunchTableCreator.append(" ");
-                bunchTableCreator.append(entityClass.COLUMN_SPECIFICATIONS.get(i));
-            }
-            if(i < entityClass.COLUMN_NAMES.length-1 || entityClass.SPECIAL_CONDITION.length != 0) {
-                bunchTableCreator.append(",");
-            }
-        }
-        if(entityClass.SPECIAL_CONDITION.length != 0){
-            for(int i = 0; i < entityClass.SPECIAL_CONDITION.length; i++) {
-                bunchTableCreator.append(entityClass.SPECIAL_CONDITION[i]);
-                if(i < entityClass.SPECIAL_CONDITION.length-1){
-                    bunchTableCreator.append(",");
-                }
-            }
-        }
-        bunchTableCreator.append(");");
-
-        return bunchTableCreator.toString();
-    }*/
 }
